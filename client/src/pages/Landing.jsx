@@ -126,7 +126,7 @@ const Landing = () => {
         <nav className="fixed top-0 left-0 right-0 z-50 bg-[#070A11]/80 backdrop-blur-xl border-b border-white/[0.06]">
           <div className="container mx-auto px-6 h-20 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
-              <Logo className="w-10 h-10" textSize="text-2xl" subtitle="CAMPUS TECH PLATFORM" />
+              <Logo className="w-10 h-10" textSize="text-2xl" philosophicalTagline={true} />
             </Link>
 
             <div className="hidden lg:flex items-center gap-8">
@@ -598,7 +598,7 @@ const Landing = () => {
         <footer className="border-t border-white/[0.06] bg-[#06080F] py-12 relative z-10 text-xs text-textMuted">
           <div className="container mx-auto px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
-              <Logo className="w-9 h-9" textSize="text-xl" subtitle="CAMPUS PLACEMENT & TECH PLATFORM" />
+              <Logo className="w-10 h-10" textSize="text-xl" philosophicalTagline={true} />
               <div className="flex items-center gap-6">
                 <Link to="/courses" className="hover:text-white transition-colors">Courses</Link>
                 <Link to="/tutorials" className="hover:text-white transition-colors">Tutorials</Link>
