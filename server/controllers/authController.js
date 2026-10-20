@@ -19,7 +19,7 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password,
-    role: role || 'student',
+    role: 'student', // Security: strictly enforce student role on public registration
     bio,
     educationalBackground,
     skills,

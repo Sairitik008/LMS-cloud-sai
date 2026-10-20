@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Tutorial = require('../models/Tutorial');
+const escapeRegex = require('../utils/escapeRegex');
 
 // @desc    Get all tutorials
 // @route   GET /api/tutorials
@@ -11,7 +12,7 @@ const getTutorials = asyncHandler(async (req, res) => {
   const keyword = req.query.keyword
     ? {
         title: {
-          $regex: req.query.keyword,
+          $regex: escapeRegex(req.query.keyword),
           $options: 'i',
         },
       }

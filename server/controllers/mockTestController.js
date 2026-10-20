@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const MockTest = require('../models/MockTest');
+const escapeRegex = require('../utils/escapeRegex');
 
 // @desc    Get all tests
 // @route   GET /api/tests
@@ -12,7 +13,7 @@ const getTests = asyncHandler(async (req, res) => {
   const keyword = req.query.keyword
     ? {
         title: {
-          $regex: req.query.keyword,
+          $regex: escapeRegex(req.query.keyword),
           $options: 'i',
         },
       }

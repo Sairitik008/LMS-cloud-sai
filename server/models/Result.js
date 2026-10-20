@@ -29,4 +29,8 @@ const resultSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// High-performance compound indexes for student query history and leaderboard aggregation
+resultSchema.index({ student: 1, createdAt: -1 });
+resultSchema.index({ mockTest: 1, score: -1 });
+
 module.exports = mongoose.model('Result', resultSchema);

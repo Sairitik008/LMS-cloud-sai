@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const StudyMaterial = require('../models/StudyMaterial');
+const escapeRegex = require('../utils/escapeRegex');
 
 // @desc    Get all study materials
 // @route   GET /api/materials
@@ -12,7 +13,7 @@ const getMaterials = asyncHandler(async (req, res) => {
   const keyword = req.query.keyword
     ? {
         title: {
-          $regex: req.query.keyword,
+          $regex: escapeRegex(req.query.keyword),
           $options: 'i',
         },
       }

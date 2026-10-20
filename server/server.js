@@ -118,9 +118,25 @@ const server = app.listen(
   )
 );
 
+// Graceful shutdown handling for container restarts & zero-downtime deployments
+const gracefulShutdown = (signal) => {
+  console.log(`\n🛑 Received ${signal}. Closing server gracefully...`);
+  server.close(async () => {
+    console.log('HTTP server closed.');
+    try {
+      await mongoose.connection.close(false);
+      console.log('MongoDB connection closed.');
+    } catch (err) {
+      console.error('Error closing MongoDB connection:', err.message);
+    }
+    process.exit(0);
+  });
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
-  console.log(`Error: ${err.message}`);
-  // Close server & exit process
-  // server.close(() => process.exit(1));
+process.on('unhandledRejection', (err) => {
+  console.error(`Unhandled Rejection Error: ${err.message}`);
 });

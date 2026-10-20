@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 // Attach lifecycle event listeners once
 let listenersAttached = false;
 const attachListeners = () => {
