@@ -178,32 +178,16 @@ const Logo = ({
         </svg>
       </div>
 
-      {/* Brand Typography */}
+      {/* Brand Typography - Clean, Modern, Elegant */}
       {withText && (
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2">
-            <span className={`font-black tracking-tight ${textSize} ${textColor} leading-none`}>
-              Sai<span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-sky-300 to-indigo-300">Cloud</span>
-            </span>
-            {showBadge && (
-              <span className="px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-widest bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-md leading-none flex items-center gap-1 shadow-sm">
-                <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
-                LMS
-              </span>
-            )}
-          </div>
-
-          {philosophicalTagline ? (
-            <span className="text-[9px] font-bold text-amber-300/80 tracking-wider uppercase mt-1">
-              Hope • Ideology • Learning • Adaptation
-            </span>
-          ) : subtitle ? (
-            <span className="text-[10px] font-semibold text-slate-400 tracking-wider uppercase mt-0.5">
-              {subtitle}
-            </span>
-          ) : (
-            <span className="text-[9px] font-semibold text-slate-500 tracking-wider uppercase mt-0.5">
-              Learn • Adapt • Triumph
+        <div className="flex items-center gap-2">
+          <span className={`font-black tracking-tight ${textSize} ${textColor} leading-none`}>
+            Sai<span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-sky-300 to-indigo-300">Cloud</span>
+          </span>
+          {showBadge && (
+            <span className="px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-widest bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-md leading-none flex items-center gap-1 shadow-sm">
+              <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
+              LMS
             </span>
           )}
         </div>
