@@ -11,7 +11,7 @@ const User = require('../models/User');
 
 describe('Unit Tests: Core Back-End Logic', () => {
   before(async () => {
-    const uri = process.env.MONGO_URI_TEST || 'mongodb://127.0.0.1:27018/lms_test';
+    const uri = process.env.MONGO_URI_TEST || 'mongodb://127.0.0.1:27017/lms_test';
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
     }
@@ -72,5 +72,28 @@ describe('Unit Tests: Core Back-End Logic', () => {
     assert.strictEqual(isAllowed('https://my-lms-app.vercel.app'), true, 'Should allow vercel.app domains');
     assert.strictEqual(isAllowed('https://random-attacker.com'), false, 'Should reject unauthorized domains');
     assert.strictEqual(isAllowed(null), true, 'Should allow requests with no origin header (curl/mobile)');
+  });
+
+  test('sanitizeNoSql strips MongoDB operators ($gt, $ne, $where) to prevent NoSQL injection', () => {
+    const { sanitizeNoSql } = require('../middleware/sanitizeMiddleware');
+    const mockReq = {
+      body: {
+        username: 'student1',
+        password: { $ne: 'random' },
+        nested: { $gt: 5, validKey: 'safe' },
+      },
+      params: { id: '123' },
+      query: { 'filter.injection': 'evil', search: 'valid' },
+    };
+
+    let nextCalled = false;
+    sanitizeNoSql(mockReq, {}, () => { nextCalled = true; });
+
+    assert.strictEqual(nextCalled, true, 'sanitizeNoSql must call next()');
+    assert.strictEqual(mockReq.body.password.$ne, undefined, '$ne operator must be stripped from body');
+    assert.strictEqual(mockReq.body.nested.$gt, undefined, '$gt operator must be stripped from nested object');
+    assert.strictEqual(mockReq.body.nested.validKey, 'safe', 'Legitimate object keys must be preserved');
+    assert.strictEqual(mockReq.query['filter.injection'], undefined, 'Dot-delimited operator paths must be stripped');
+    assert.strictEqual(mockReq.query.search, 'valid', 'Legitimate query param must be preserved');
   });
 });

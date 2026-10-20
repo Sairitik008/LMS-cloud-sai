@@ -27,7 +27,7 @@ const connectDB = async () => {
   attachListeners();
 
   const primaryUri = process.env.MONGO_URI;
-  const fallbackUri = process.env.MONGO_URI_TEST || 'mongodb://127.0.0.1:27018/lms_test';
+  const fallbackUri = process.env.MONGO_URI_TEST || 'mongodb://127.0.0.1:27017/lms';
 
   const mongooseOptions = {
     serverSelectionTimeoutMS: 5000,

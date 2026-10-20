@@ -10,7 +10,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Ensure test database URI is used
-const TEST_MONGO_URI = process.env.MONGO_URI_TEST || 'mongodb://127.0.0.1:27018/lms_test';
+const TEST_MONGO_URI = process.env.MONGO_URI_TEST || 'mongodb://127.0.0.1:27017/lms_test';
 
 const User = require('../models/User');
 const Course = require('../models/Course');
@@ -349,5 +349,11 @@ describe('Integration Tests: LMS End-to-End API Pipeline', () => {
     });
     const exists = getRes.data.students.some((s) => s._id === studentId);
     assert.strictEqual(exists, false, 'Deleted student must not appear in students list');
+  });
+
+  test('17. CastError handling: Invalid MongoDB ObjectId in GET /api/courses/invalid-id yields 404', async () => {
+    const res = await request('/api/courses/not-a-valid-object-id');
+    assert.strictEqual(res.status, 404);
+    assert.strictEqual(res.data.message, 'Resource not found');
   });
 });

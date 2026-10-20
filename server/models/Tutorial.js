@@ -14,4 +14,6 @@ const tutorialSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+tutorialSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('Tutorial', tutorialSchema);

@@ -19,4 +19,6 @@ const mockTestSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+mockTestSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('MockTest', mockTestSchema);

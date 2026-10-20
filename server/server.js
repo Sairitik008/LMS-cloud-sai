@@ -5,7 +5,6 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const helmet = require('helmet');
-// const mongoSanitize = require('express-mongo-sanitize');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const { apiLimiter } = require('./middleware/rateLimitMiddleware');
 
@@ -17,8 +16,15 @@ connectDB();
 
 const app = express();
 
+// Trust reverse proxy (Render, Vercel, Cloudflare, AWS ALB) for correct IP rate-limiting & SSL offloading
+app.set('trust proxy', 1);
+
 // Body parser
 app.use(express.json());
+
+// Express 5 compatible NoSQL Query Injection protection
+const { sanitizeNoSql } = require('./middleware/sanitizeMiddleware');
+app.use(sanitizeNoSql);
 
 // CORS
 const configuredFrontend = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
@@ -60,9 +66,6 @@ app.use(cors({
 
 // Security Headers
 app.use(helmet());
-
-// Data Sanitization against NoSQL Query Injection (Bypassed for local audit)
-// app.use(mongoSanitize());
 
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') {

@@ -139,14 +139,19 @@ const getResultById = asyncHandler(async (req, res) => {
     .populate('mockTest', 'title category questions')
     .populate('student', 'name email');
 
-  if (result) {
-    // Basic check: user can only see their own result (or be an admin)
-    // For this portfolio we'll keep it simple
-    res.json(result);
-  } else {
+  if (!result) {
     res.status(404);
     throw new Error('Result not found');
   }
+
+  // IDOR Protection: Students may only inspect their own test results; Admins may inspect all
+  const studentId = result.student?._id ? result.student._id.toString() : result.student?.toString();
+  if (req.user && req.user.role !== 'admin' && studentId && studentId !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error('Not authorized to access this test result');
+  }
+
+  res.json(result);
 });
 
 module.exports = {
