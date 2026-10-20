@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { FaGithub, FaLinkedin, FaCode, FaArrowRight, FaArrowLeft, FaCheck } from 'react-icons/fa';
+import Logo from '../components/common/Logo';
 
 const Register = () => {
   const [step, setStep] = useState(1);
@@ -69,146 +70,265 @@ const Register = () => {
     }
   };
 
+  const stepTitles = [
+    { num: 1, label: "Account" },
+    { num: 2, label: "Academics" },
+    { num: 3, label: "Tech Stack" },
+    { num: 4, label: "Coding Profiles" }
+  ];
+
   const stepVariants = {
-    hidden: { opacity: 0, x: 50 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
-    exit: { opacity: 0, x: -50, transition: { duration: 0.2 } },
+    hidden: { opacity: 0, x: 20 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.25 } },
+    exit: { opacity: 0, x: -20, transition: { duration: 0.2 } },
   };
 
   return (
-    <div className="min-h-screen py-10 flex items-center justify-center bg-background px-4 overflow-y-auto overflow-hidden">
+    <div className="min-h-screen py-12 flex items-center justify-center bg-[#070A11] px-4 relative overflow-hidden">
+      {/* Background Ambience */}
+      <div className="fixed inset-0 bg-grid-tech opacity-40 pointer-events-none"></div>
+      <div className="fixed top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-sky-500/10 rounded-full blur-[140px] pointer-events-none"></div>
+
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="glass-card w-full max-w-lg p-8 my-8 relative overflow-hidden"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-card w-full max-w-lg p-6 sm:p-8 rounded-2xl border-white/[0.08] relative z-10 shadow-2xl bg-[#090E1A]/90"
       >
-        {/* Progress Bar */}
-        <div className="absolute top-0 left-0 h-1 bg-accent/20 w-full">
-          <motion.div 
-            className="h-full bg-accent"
-            initial={{ width: '25%' }}
-            animate={{ width: `${(step / 4) * 100}%` }}
-            transition={{ duration: 0.3 }}
-          ></motion.div>
+        {/* Brand Header */}
+        <div className="flex flex-col items-center text-center mb-6">
+          <Link to="/" className="mb-3">
+            <Logo className="w-10 h-10" textSize="text-2xl" subtitle="CAMPUS PLACEMENT OS" />
+          </Link>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+            Create Student Profile
+          </h1>
+          <p className="text-slate-400 text-xs sm:text-sm mt-1">
+            Build your campus placement readiness portfolio
+          </p>
         </div>
 
-        <div className="text-center mb-8 pt-4">
-          <h1 className="text-3xl font-bold text-accent mb-2">Create Your Student Account</h1>
-          <p className="text-textMuted text-sm">Step {step} of 4 — Placement & Learning Profile</p>
+        {/* Step Progress Indicators */}
+        <div className="grid grid-cols-4 gap-2 mb-8">
+          {stepTitles.map((s) => {
+            const isCompleted = step > s.num;
+            const isCurrent = step === s.num;
+            return (
+              <div key={s.num} className="flex flex-col items-center">
+                <div 
+                  className={`w-full h-1.5 rounded-full transition-all duration-300 mb-1.5 ${
+                    isCompleted 
+                      ? 'bg-emerald-400' 
+                      : isCurrent 
+                        ? 'bg-sky-400 shadow-sm shadow-sky-400/50' 
+                        : 'bg-white/[0.08]'
+                  }`}
+                />
+                <span className={`text-[10px] font-bold truncate ${
+                  isCurrent ? 'text-sky-400' : isCompleted ? 'text-emerald-400' : 'text-slate-500'
+                }`}>
+                  {s.label}
+                </span>
+              </div>
+            );
+          })}
         </div>
 
         <AnimatePresence mode="wait">
           {step === 1 && (
             <motion.div key="step1" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">Basic Account Information</h3>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Full Name *</label>
-                <input type="text" className="input-field" placeholder="e.g. Rahul Sharma" value={name} onChange={(e) => setName(e.target.value)} />
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300">
+                  Full Name *
+                </label>
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  placeholder="e.g. Rahul Sharma" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Email Address *</label>
-                <input type="email" className="input-field" placeholder="e.g. rahul.sharma@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300">
+                  College Email Address *
+                </label>
+                <input 
+                  type="email" 
+                  className="input-field" 
+                  placeholder="e.g. rahul.sharma@gmail.com" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Password *</label>
-                <input type="password" className="input-field" placeholder="At least 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300">
+                  Password * (Min 6 characters)
+                </label>
+                <input 
+                  type="password" 
+                  className="input-field" 
+                  placeholder="Enter strong password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Confirm Password *</label>
-                <input type="password" className="input-field" placeholder="Re-enter password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300">
+                  Confirm Password *
+                </label>
+                <input 
+                  type="password" 
+                  className="input-field" 
+                  placeholder="Re-enter password" 
+                  value={confirmPassword} 
+                  onChange={(e) => setConfirmPassword(e.target.value)} 
+                />
               </div>
             </motion.div>
           )}
 
           {step === 2 && (
             <motion.div key="step2" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">College & Academic Details</h3>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Short Bio / Career Goals</label>
-                <textarea 
-                  className="input-field h-24 resize-none" placeholder="e.g. Final year B.Tech CSE student preparing for SDE-1 placement drives and cracking Tier-1 tech interviews."
-                  value={bio} onChange={(e) => setBio(e.target.value)}
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300">
+                  Degree, Branch & College Name
+                </label>
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  placeholder="e.g. B.Tech CSE, 3rd Year (NIT / JNTU / Anna Univ)" 
+                  value={educationalBackground} 
+                  onChange={(e) => setEducationalBackground(e.target.value)} 
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Degree, Branch & College</label>
-                <input type="text" className="input-field" placeholder="e.g. B.Tech CSE, 3rd Year (NIT / JNTU / Anna Univ)" value={educationalBackground} onChange={(e) => setEducationalBackground(e.target.value)} />
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300">
+                  Career Goals & Aspirations
+                </label>
+                <textarea 
+                  className="input-field h-24 resize-none" 
+                  placeholder="e.g. Final year B.Tech CSE student preparing for SDE-1 placement drives and cracking tier-1 tech rounds."
+                  value={bio} 
+                  onChange={(e) => setBio(e.target.value)}
+                />
               </div>
             </motion.div>
           )}
 
           {step === 3 && (
             <motion.div key="step3" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">Technical Skills & Interests</h3>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Core Skills (Comma separated)</label>
-                <input type="text" className="input-field" placeholder="e.g. Java, Data Structures, Spring Boot, React, SQL" value={skills} onChange={(e) => setSkills(e.target.value)} />
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300">
+                  Programming Languages & Core Skills
+                </label>
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  placeholder="e.g. Java, Data Structures, Spring Boot, React, SQL" 
+                  value={skills} 
+                  onChange={(e) => setSkills(e.target.value)} 
+                />
+                <p className="text-[11px] text-slate-500 mt-1">Separate skills with commas</p>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Interests & Hobbies (Comma separated)</label>
-                <input type="text" className="input-field" placeholder="e.g. Competitive Programming, Hackathons, Cricket, Chess" value={hobbies} onChange={(e) => setHobbies(e.target.value)} />
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300">
+                  Interests & Competitive Coding
+                </label>
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  placeholder="e.g. Competitive Programming, Hackathons, Cricket, Chess" 
+                  value={hobbies} 
+                  onChange={(e) => setHobbies(e.target.value)} 
+                />
               </div>
             </motion.div>
           )}
 
           {step === 4 && (
             <motion.div key="step4" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">Coding Profiles & Portfolio</h3>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary flex items-center gap-2">
-                  <FaGithub /> GitHub Profile
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300 flex items-center gap-2">
+                  <FaCode className="text-amber-400" /> LeetCode / HackerRank URL
                 </label>
-                <input type="url" className="input-field" placeholder="https://github.com/rahul-sharma" value={github} onChange={(e) => setGithub(e.target.value)} />
+                <input 
+                  type="url" 
+                  className="input-field" 
+                  placeholder="https://leetcode.com/rahul_sharma" 
+                  value={hackerrank} 
+                  onChange={(e) => setHackerrank(e.target.value)} 
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary flex items-center gap-2">
-                  <FaCode /> HackerRank / LeetCode Profile
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300 flex items-center gap-2">
+                  <FaGithub className="text-white" /> GitHub Profile URL
                 </label>
-                <input type="url" className="input-field" placeholder="https://leetcode.com/rahul_sharma" value={hackerrank} onChange={(e) => setHackerrank(e.target.value)} />
+                <input 
+                  type="url" 
+                  className="input-field" 
+                  placeholder="https://github.com/rahul-sharma" 
+                  value={github} 
+                  onChange={(e) => setGithub(e.target.value)} 
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary flex items-center gap-2">
-                  <FaLinkedin color="#0072b1" /> LinkedIn Profile
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1 text-slate-300 flex items-center gap-2">
+                  <FaLinkedin className="text-sky-400" /> LinkedIn Profile URL
                 </label>
-                <input type="url" className="input-field" placeholder="https://linkedin.com/in/rahulsharma" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} />
+                <input 
+                  type="url" 
+                  className="input-field" 
+                  placeholder="https://linkedin.com/in/rahulsharma" 
+                  value={linkedin} 
+                  onChange={(e) => setLinkedin(e.target.value)} 
+                />
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="flex items-center justify-between mt-8 pt-4 border-t border-border">
+        {/* Action Controls */}
+        <div className="flex items-center justify-between mt-8 pt-5 border-t border-white/[0.06]">
           {step > 1 ? (
-            <button type="button" onClick={handlePrev} className="btn-secondary flex items-center gap-2">
-              <FaArrowLeft /> Back
+            <button 
+              type="button" 
+              onClick={handlePrev} 
+              className="btn-secondary py-2 px-4 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+            >
+              <FaArrowLeft className="text-[10px]" /> Back
             </button>
           ) : (
-            <div></div> /* Spacer */
+            <div></div>
           )}
           
           {step < 4 ? (
-            <button type="button" onClick={handleNext} className="btn-primary flex items-center gap-2">
-              Next Step <FaArrowRight />
+            <button 
+              type="button" 
+              onClick={handleNext} 
+              className="btn-primary py-2 px-5 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+            >
+              Next Step <FaArrowRight className="text-[10px]" />
             </button>
           ) : (
             <button 
               type="button" 
               onClick={handleSubmit} 
               disabled={loading}
-              className="btn-primary flex items-center gap-2 shadow-lg"
+              className="btn-primary py-2 px-6 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-lg shadow-sky-500/25"
             >
               {loading ? (
-                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
               ) : (
-                <><FaCheck /> Finish Setup</>
+                <><FaCheck className="text-[10px]" /> Complete Registration</>
               )}
             </button>
           )}
         </div>
 
-        <div className="mt-6 text-center text-sm text-textMuted pt-4">
+        <div className="mt-6 text-center text-xs text-slate-400">
           Already have an account?{' '}
-          <Link to="/login" className="text-accent hover:underline font-bold">
-            Log in here
+          <Link to="/login" className="text-sky-400 hover:text-sky-300 font-bold ml-1">
+            Sign in &rarr;
           </Link>
         </div>
       </motion.div>
