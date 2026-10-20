@@ -78,7 +78,7 @@ const runSmokeTest = async () => {
     // 6. Check Leaderboard
     const lbRes = await axios.get(`${API_URL}/results/leaderboard`);
     console.log('✅ Leaderboard Data Verified');
-    console.log(`✅ Top Student: ${lbRes.data[0]?.user?.name || 'N/A'}`);
+    console.log(`✅ Top Student: ${lbRes.data[0]?.studentInfo?.name || lbRes.data[0]?.user?.name || 'N/A'}`);
 
     console.log('\n🌟 ALL SYSTEM FLOWS VERIFIED 100% 🌟');
     process.exit(0);

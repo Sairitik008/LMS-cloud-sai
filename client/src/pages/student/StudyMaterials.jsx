@@ -49,8 +49,8 @@ const StudyMaterials = () => {
     <AnimatedPage>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-textPrimary">Study Resources</h1>
-          <p className="text-textMuted mt-1">Download and access PDFs, links, and curated technical notes.</p>
+          <h1 className="text-3xl font-bold text-textPrimary">Placement & Exam Resources</h1>
+          <p className="text-textMuted mt-1">Download handwritten notes, SDE interview cheatsheets, and GATE CS formula sheets.</p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-6">
@@ -58,7 +58,7 @@ const StudyMaterials = () => {
             <FaSearch className="text-textMuted" />
             <input 
               type="text" 
-              placeholder="Search materials by title, description or category..." 
+              placeholder="Search notes e.g. Striver SDE Sheet, DBMS Cheatsheet, OS Notes..." 
               className="bg-transparent border-none outline-none text-sm w-full text-textPrimary placeholder:text-textMuted"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

@@ -112,14 +112,14 @@ const Courses = () => {
       <div className="space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-textPrimary">All Courses</h1>
-            <p className="text-textMuted mt-1">Structured learning paths for next-gen IT skills.</p>
+            <h1 className="text-3xl font-bold text-textPrimary">Placement & Engineering Courses</h1>
+            <p className="text-textMuted mt-1">Curated learning paths for DSA in Java/C++, MERN full-stack, and core CS subjects.</p>
           </div>
           <div className="bg-background px-4 py-2 rounded-xl border border-border flex items-center gap-4 max-w-md w-full">
             <FaSearch className="text-textMuted" />
             <input 
               type="text" 
-              placeholder="Search for courses..." 
+              placeholder="Search by topic e.g. DSA in Java, MERN, GATE CS..." 
               className="bg-transparent border-none outline-none text-sm w-full text-textPrimary placeholder:text-textMuted"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

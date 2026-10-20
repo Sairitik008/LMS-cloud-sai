@@ -11,9 +11,19 @@ const TestResult = () => {
 
   const getResult = async () => {
     try {
-      const data = await fetchData(`/results/me`);
-      const currentResult = data.find(r => r._id === id);
-      setResult(currentResult);
+      const data = await fetchData(`/results/${id}`);
+      if (data && data._id) {
+        setResult(data);
+        return;
+      }
+    } catch (e) {
+      // Fallback to searching /results/me
+    }
+
+    try {
+      const myResults = await fetchData('/results/me');
+      const current = Array.isArray(myResults) ? myResults.find((r) => r._id === id) : null;
+      setResult(current);
     } catch (err) {
       console.error(err);
     }
@@ -43,8 +53,17 @@ const TestResult = () => {
         >
           <FaTrophy />
         </motion.div>
-        <h1 className="text-4xl font-bold mb-2">Test Completed!</h1>
-        <p className="text-textMuted">You've successfully finished the {result.mockTest?.title} assessment.</p>
+        <h1 className="text-4xl font-bold mb-2">
+          {result.score >= 70 ? '🎉 Placement Ready!' : result.score >= 50 ? '👍 Good Effort!' : '📚 Keep Practicing!'}
+        </h1>
+        <p className="text-textMuted max-w-lg mx-auto">
+          You finished the <span className="text-textPrimary font-bold">{result.mockTest?.title}</span> mock assessment.
+          {result.score >= 70 
+            ? ' Outstanding! Your score meets the clearing cutoff for top tech placement drives.' 
+            : result.score >= 50 
+            ? ' On the right track. Review the detailed explanations below to boost your speed and accuracy.' 
+            : ' Don’t worry — review the solutions below, practice key concepts, and re-attempt to improve your rank.'}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

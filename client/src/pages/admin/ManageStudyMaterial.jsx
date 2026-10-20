@@ -189,7 +189,7 @@ const ManageStudyMaterial = () => {
                 <input 
                   type="text" 
                   className="input-field"
-                  placeholder="e.g. Cloud Architecture"
+                  placeholder="e.g. Placement Notes, GATE CS, DSA Cheatsheet, DBMS"
                   value={formData.category}
                   onChange={(e) => setFormData({...formData, category: e.target.value})}
                   required
@@ -219,7 +219,7 @@ const ManageStudyMaterial = () => {
             <input 
               type="text" 
               className="input-field"
-              placeholder="https://example.com/file.pdf"
+              placeholder="https://res.cloudinary.com/... or direct resource link"
               value={formData.fileUrl}
               onChange={(e) => setFormData({...formData, fileUrl: e.target.value})}
               required
@@ -230,7 +230,7 @@ const ManageStudyMaterial = () => {
             <label className="text-sm font-bold text-textPrimary">Description (Optional)</label>
             <textarea 
               className="input-field h-24 resize-none"
-              placeholder="Short description of the material..."
+              placeholder="Handwritten quick-revision notes covering SQL queries, normalization, and indexing frequently asked in campus interviews..."
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
             />

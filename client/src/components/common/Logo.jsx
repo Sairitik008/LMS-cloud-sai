@@ -24,7 +24,7 @@ const Logo = ({ className = "w-8 h-8", withText = true, textColor = "text-textPr
       </div>
       {withText && (
         <span className={`font-black tracking-tighter ${textSize} ${textColor}`}>
-          IT<span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-violet-500">-</span>LMS
+          Sai<span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-violet-500">Cloud</span> LMS
         </span>
       )}
     </div>

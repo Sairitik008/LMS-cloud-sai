@@ -249,7 +249,7 @@ const ManageCourses = () => {
               <input 
                 type="text" 
                 className="input-field"
-                placeholder="e.g. Master React in 30 Days"
+                placeholder="e.g. Complete DSA & Algorithms in Java (Placement Ready)"
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
                 required
@@ -260,7 +260,7 @@ const ManageCourses = () => {
               <input 
                 type="text" 
                 className="input-field"
-                placeholder="e.g. Web Development"
+                placeholder="e.g. Campus Placement, Full-Stack Development, Core CS & GATE"
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
                 required
@@ -272,7 +272,7 @@ const ManageCourses = () => {
             <label className="text-sm font-bold text-textPrimary">Description</label>
             <textarea 
               className="input-field h-24 resize-none"
-              placeholder="Brief overview of what students will learn..."
+              placeholder="Detailed course roadmap covering arrays, linked lists, trees, graphs, and dynamic programming with LeetCode/GFG solutions..."
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
               required
@@ -337,14 +337,14 @@ const ManageCourses = () => {
                 <input 
                   type="text" 
                   className="input-field bg-card"
-                  placeholder="Module Title"
+                  placeholder="e.g. Module 1: Binary Trees, BST Traversals & DFS/BFS"
                   value={module.title}
                   onChange={(e) => updateModule(index, 'title', e.target.value)}
                   required
                 />
                 <textarea 
                   className="input-field bg-card h-20 resize-none"
-                  placeholder="Module Content (Markdown/Rich Text supported)"
+                  placeholder="Module notes, problem links (LeetCode / GFG), and code implementations in Java/C++..."
                   value={module.content}
                   onChange={(e) => updateModule(index, 'content', e.target.value)}
                   required

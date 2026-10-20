@@ -7,6 +7,7 @@ import AnimatedPage from '../../components/common/AnimatedPage';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import EmptyState from '../../components/common/EmptyState';
 import toast from 'react-hot-toast';
+import { uploadDirectToCloudinary } from '../../services/uploadService';
 
 const ManageTutorials = () => {
   const [tutorials, setTutorials] = useState([]);
@@ -94,6 +95,20 @@ const ManageTutorials = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    let directVideoUrl = formData.videoUrl;
+
+    // Direct Cloudinary upload: Upload heavy video directly from browser to protect 512MB Render RAM
+    if (videoFile) {
+      const uploadToast = toast.loading('Uploading video directly to Cloudinary CDN...');
+      try {
+        directVideoUrl = await uploadDirectToCloudinary(videoFile, 'lms/tutorials');
+        toast.success('Video uploaded to CDN successfully!', { id: uploadToast });
+      } catch (err) {
+        toast.dismiss(uploadToast);
+        console.warn('Direct Cloudinary upload failed, falling back to server multipart:', err);
+      }
+    }
+
     const data = new FormData();
     data.append('title', formData.title);
     data.append('description', formData.description);
@@ -104,8 +119,13 @@ const ManageTutorials = () => {
     if (thumbnailFile) data.append('thumbnail', thumbnailFile);
     else data.append('thumbnail', formData.thumbnail);
 
-    if (videoFile) data.append('video', videoFile);
-    else data.append('videoUrl', formData.videoUrl);
+    if (directVideoUrl && directVideoUrl !== formData.videoUrl) {
+      data.append('videoUrl', directVideoUrl);
+    } else if (videoFile) {
+      data.append('video', videoFile);
+    } else {
+      data.append('videoUrl', formData.videoUrl);
+    }
 
     try {
       if (editingTutorial) {
@@ -273,7 +293,7 @@ const ManageTutorials = () => {
               <input 
                 type="text" 
                 className="input-field"
-                placeholder="e.g. Introduction to GraphQL"
+                placeholder="e.g. Mastering Binary Search Trees & DFS in Java"
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
                 required
@@ -284,7 +304,7 @@ const ManageTutorials = () => {
               <input 
                 type="text" 
                 className="input-field"
-                placeholder="e.g. Backend Development"
+                placeholder="e.g. Data Structures & Algorithms, Full-Stack MERN, Cloud & DevOps"
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
                 required
@@ -296,7 +316,7 @@ const ManageTutorials = () => {
             <label className="text-sm font-bold text-textPrimary">Short Description</label>
             <textarea 
               className="input-field h-20 resize-none"
-              placeholder="Brief summary..."
+              placeholder="Step-by-step video lesson covering BST insertion, deletion, and inorder traversal with placement questions."
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
               required
@@ -352,7 +372,7 @@ const ManageTutorials = () => {
             <label className="text-sm font-bold text-textPrimary">Tutorial Lesson Content (MD/HTML)</label>
             <textarea 
               className="input-field h-32 resize-none"
-              placeholder="Detailed lesson instructions..."
+              placeholder="Detailed lesson notes, algorithm complexity analysis, and practice problem links (LeetCode / GFG)..."
               value={formData.content}
               onChange={(e) => setFormData({...formData, content: e.target.value})}
               required
@@ -374,7 +394,7 @@ const ManageTutorials = () => {
             <input 
               type="text" 
               className="input-field"
-              placeholder="e.g. React, JavaScript"
+              placeholder="e.g. Java, BinaryTrees, LeetCode, Placement2026"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={addTag}

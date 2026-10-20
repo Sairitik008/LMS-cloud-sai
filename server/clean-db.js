@@ -1,12 +1,13 @@
+const path = require('path');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const connectDB = require('./config/db');
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const cleanIndexes = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('Connected to MongoDB');
+    await connectDB();
 
     const collections = await mongoose.connection.db.listCollections().toArray();
     const userColl = collections.find(c => c.name === 'users');

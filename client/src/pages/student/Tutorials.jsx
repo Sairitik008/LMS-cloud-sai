@@ -103,8 +103,8 @@ const Tutorials = () => {
     <AnimatedPage>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-textPrimary">Video Tutorials</h1>
-          <p className="text-textMuted mt-1">Enhance your IT skills with our expert-led video content.</p>
+          <h1 className="text-3xl font-bold text-textPrimary">Video Masterclasses</h1>
+          <p className="text-textMuted mt-1">Step-by-step video masterclasses on Full-Stack, DSA in Java, and Cloud Deployments.</p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-6">
@@ -112,7 +112,7 @@ const Tutorials = () => {
             <FaSearch className="text-textMuted" />
             <input 
               type="text" 
-              placeholder="Search tutorials..." 
+              placeholder="Search tutorials e.g. Dynamic Programming, Spring Boot, React 19, Docker..." 
               className="bg-transparent border-none outline-none text-sm w-full text-textPrimary placeholder:text-textMuted"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

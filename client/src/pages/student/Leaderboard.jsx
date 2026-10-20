@@ -42,8 +42,8 @@ const Leaderboard = () => {
           >
             <FaTrophy />
           </motion.div>
-          <h1 className="text-4xl font-bold mb-2">Global Leaderboard</h1>
-          <p className="text-textMuted">Compete with the top IT students and track your ranking.</p>
+          <h1 className="text-4xl font-bold mb-2">All-India Student Leaderboard 🏆</h1>
+          <p className="text-textMuted">Compete with fellow engineering & CS students across India. Rankings update automatically after every mock test.</p>
         </div>
 
         <div className="glass-card overflow-hidden">

@@ -1,12 +1,14 @@
+const path = require('path');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const User = require('./models/User');
+const connectDB = require('./config/db');
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const createTestUser = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await connectDB();
     
     // Check if user exists
     let user = await User.findOne({ email: 'admin@example.com' });

@@ -23,7 +23,7 @@ const getCourses = asyncHandler(async (req, res) => {
     .skip(pageSize * (page - 1))
     .sort({ createdAt: -1 });
 
-  res.json({ courses, page, pages: Math.ceil(count / pageSize) });
+  res.json({ courses, page, pages: Math.ceil(count / pageSize), total: count });
 });
 
 // @desc    Get course by ID

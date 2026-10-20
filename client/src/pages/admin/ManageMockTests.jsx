@@ -35,16 +35,28 @@ const ManageMockTests = () => {
     getTests();
   }, []);
 
-  const handleOpenModal = (test = null) => {
+  const handleOpenModal = async (test = null) => {
     if (test) {
       setEditingTest(test);
-      setFormData({
-        title: test.title,
-        description: test.description,
-        category: test.category,
-        duration: test.duration || 30,
-        questions: test.questions || []
-      });
+      try {
+        // Fetch complete test with correctAnswer & explanations
+        const fullTest = await fetchData(`/mocktests/${test._id}`);
+        setFormData({
+          title: fullTest.title || test.title,
+          description: fullTest.description || test.description,
+          category: fullTest.category || test.category,
+          duration: fullTest.duration || test.duration || 30,
+          questions: fullTest.questions || test.questions || []
+        });
+      } catch (err) {
+        setFormData({
+          title: test.title,
+          description: test.description,
+          category: test.category,
+          duration: test.duration || 30,
+          questions: test.questions || []
+        });
+      }
     } else {
       setEditingTest(null);
       setFormData({
@@ -209,7 +221,7 @@ const ManageMockTests = () => {
                  <input 
                    type="text" 
                    className="input-field"
-                   placeholder="e.g. JavaScript Advanced Patterns"
+                   placeholder="e.g. Data Structures & Algorithms (TCS Digital / Infosys DSE Mock)"
                    value={formData.title}
                    onChange={(e) => setFormData({...formData, title: e.target.value})}
                    required
@@ -220,7 +232,7 @@ const ManageMockTests = () => {
                  <input 
                    type="text" 
                    className="input-field"
-                   placeholder="e.g. JavaScript"
+                   placeholder="e.g. Campus Placement, Core CS & GATE, Quantitative Aptitude"
                    value={formData.category}
                    onChange={(e) => setFormData({...formData, category: e.target.value})}
                    required
@@ -249,7 +261,7 @@ const ManageMockTests = () => {
               <label className="text-sm font-bold text-textPrimary">Description</label>
               <textarea 
                 className="input-field h-16 resize-none"
-                placeholder="Instructions for the test..."
+                placeholder="Timed assessment simulating actual placement online rounds. 1 mark per question, zero negative marking."
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
               />
@@ -284,7 +296,7 @@ const ManageMockTests = () => {
                   
                   <textarea 
                     className="input-field bg-card h-20 resize-none"
-                    placeholder="Enter question text..."
+                    placeholder="e.g. What is the time complexity of searching an element in a balanced Binary Search Tree (BST)?"
                     value={q.questionText}
                     onChange={(e) => updateQuestion(qIdx, 'questionText', e.target.value)}
                     required
@@ -299,7 +311,7 @@ const ManageMockTests = () => {
                         <input 
                           type="text" 
                           className="input-field bg-card flex-1 text-sm py-2"
-                          placeholder={`Option ${oIdx + 1}`}
+                          placeholder={`Option ${oIdx + 1} (e.g. O(log N))`}
                           value={opt}
                           onChange={(e) => updateOption(qIdx, oIdx, e.target.value)}
                           required
@@ -328,7 +340,7 @@ const ManageMockTests = () => {
                       <input 
                         type="text" 
                         className="input-field bg-card text-sm py-2"
-                        placeholder="Why is this correct?"
+                        placeholder="e.g. In a balanced BST, each comparison halves the remaining nodes, giving O(log N)."
                         value={q.explanation}
                         onChange={(e) => updateQuestion(qIdx, 'explanation', e.target.value)}
                       />

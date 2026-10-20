@@ -42,8 +42,29 @@ const Login = () => {
         className="glass-card w-full max-w-md p-8"
       >
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-accent mb-2">Welcome Back</h1>
-          <p className="text-textMuted text-sm">Login to your LMS account</p>
+          <h1 className="text-3xl font-bold text-accent mb-2">Welcome Back! 👋</h1>
+          <p className="text-textMuted text-sm">Sign in to access your courses, mock tests, and notes</p>
+        </div>
+
+        {/* Quick Demo Helper Chips */}
+        <div className="mb-6 p-3 rounded-xl bg-accent/5 border border-accent/20">
+          <p className="text-[11px] text-textMuted uppercase font-bold tracking-wider mb-2 text-center">Quick Demo Login</p>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <button
+              type="button"
+              onClick={() => { setEmail('student@example.com'); setPassword('password123'); }}
+              className="py-1.5 px-3 rounded-lg bg-background hover:bg-accent/10 border border-border hover:border-accent text-textPrimary transition-all text-center font-medium"
+            >
+              🎓 Student Demo
+            </button>
+            <button
+              type="button"
+              onClick={() => { setEmail('admin@example.com'); setPassword('password123'); }}
+              className="py-1.5 px-3 rounded-lg bg-background hover:bg-accent/10 border border-border hover:border-accent text-textPrimary transition-all text-center font-medium"
+            >
+              ⚡ Admin Demo
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -52,7 +73,7 @@ const Login = () => {
             <input 
               type="email" 
               className="input-field"
-              placeholder="you@example.com"
+              placeholder="e.g. rahul.sharma@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -64,7 +85,7 @@ const Login = () => {
             <input 
               type="password" 
               className="input-field"
-              placeholder="••••••••"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -74,19 +95,19 @@ const Login = () => {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full btn-primary flex items-center justify-center"
+            className="w-full btn-primary flex items-center justify-center font-bold"
           >
             {loading ? (
               <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
             ) : null}
-            Sign In
+            Sign In to LMS
           </button>
         </form>
 
         <div className="mt-8 text-center text-sm text-textMuted">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-accent hover:underline font-medium">
-            Register for free
+          Don't have an account yet?{' '}
+          <Link to="/register" className="text-accent hover:underline font-bold">
+            Register for free &rarr;
           </Link>
         </div>
       </motion.div>

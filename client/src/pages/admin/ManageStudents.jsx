@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 
 const ManageStudents = () => {
   const [students, setStudents] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const { loading, fetchData } = useFetch();
 
   const getStudents = async () => {
@@ -35,12 +36,18 @@ const ManageStudents = () => {
     }
   };
 
+  const filteredStudents = students.filter(student => 
+    student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.educationalBackground?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <AnimatedPage>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-textPrimary">Registered Students</h1>
-          <p className="text-textMuted mt-1">View and manage all active student accounts.</p>
+          <h1 className="text-3xl font-bold text-textPrimary">Enrolled Students Directory</h1>
+          <p className="text-textMuted mt-1">View and manage all registered student accounts across Indian colleges.</p>
         </div>
 
         <div className="glass-card p-6">
@@ -48,7 +55,9 @@ const ManageStudents = () => {
             <FaSearch className="text-textMuted" />
             <input 
               type="text" 
-              placeholder="Search students..." 
+              placeholder="Search by student name, email, or college..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="bg-transparent border-none outline-none text-sm w-full text-textPrimary placeholder:text-textMuted"
             />
           </div>
@@ -58,7 +67,7 @@ const ManageStudents = () => {
               <thead>
                 <tr className="text-textMuted text-sm uppercase tracking-wider border-b border-border">
                   <th className="pb-4 px-4">Student</th>
-                  <th className="pb-4 px-4 text-center">Joined Date</th>
+                  <th className="pb-4 px-4 text-center">Registration Date</th>
                   <th className="pb-4 px-4 text-center">Status</th>
                   <th className="pb-4 px-4 text-right">Actions</th>
                 </tr>
@@ -68,7 +77,7 @@ const ManageStudents = () => {
                   <SkeletonLoader type="table-row" count={5} />
                 ) : (
                   <>
-                    {students.map((student) => (
+                    {filteredStudents.map((student) => (
                       <tr key={student._id} className="group hover:bg-white/5 transition-colors">
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-3">
@@ -84,11 +93,16 @@ const ManageStudents = () => {
                               <p className="text-[10px] text-textMuted flex items-center gap-1">
                                 <FaEnvelope className="text-[8px]" /> {student.email}
                               </p>
+                              {student.educationalBackground && (
+                                <p className="text-[10px] text-accent/80 font-medium mt-0.5">
+                                  {student.educationalBackground}
+                                </p>
+                              )}
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-center text-textMuted text-sm">
-                          {new Date(student.createdAt).toLocaleDateString()}
+                        <td className="py-4 px-4 text-center text-textMuted text-sm font-medium">
+                          {new Date(student.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </td>
                         <td className="py-4 px-4 text-center">
                           <span className="bg-green-500/10 text-green-500 px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest">

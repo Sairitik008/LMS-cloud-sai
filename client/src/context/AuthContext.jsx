@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     const { data } = await api.post('/auth/register', payload);
     setUser(data);
     localStorage.setItem('userInfo', JSON.stringify(data));
-    toast.success(`Welcome to the platform, ${data.name}!`);
+    toast.success(`Welcome to SaiCloud LMS, ${data.name}! Let's start learning.`);
   };
 
   const updateProfile = async (formData) => {

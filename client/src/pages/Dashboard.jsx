@@ -60,9 +60,9 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
         >
           <h1 className="text-3xl font-bold text-textPrimary">
-            Welcome back, <span className="text-accent">{user?.name}</span>!
+            Welcome back, <span className="text-accent">{user?.name}</span>! 👋
           </h1>
-          <p className="text-textMuted mt-2">Ready to continue your IT mastery journey?</p>
+          <p className="text-textMuted mt-2">Track your placement preparation, course modules, and test scores.</p>
         </motion.div>
 
         {/* Using a simple row skeleton for stats if needed, or just let useFetch handle initial nulls */}
@@ -84,7 +84,9 @@ const Dashboard = () => {
                   <div className="glass-card p-6 flex justify-between items-center group-hover:border-accent transition-all">
                     <div>
                       <h3 className="font-bold group-hover:text-accent transition-colors">{result.mockTest?.title}</h3>
-                      <p className="text-xs text-textMuted">{new Date(result.createdAt).toLocaleDateString()}</p>
+                      <p className="text-xs text-textMuted">
+                        {new Date(result.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
                     </div>
                     <div className={`text-xl font-black ${result.score >= 70 ? 'text-green-500' : 'text-accent'}`}>
                       {result.score}%

@@ -131,7 +131,7 @@ const Announcements = () => {
               <input 
                 type="text" 
                 className="input-field"
-                placeholder="e.g. Server Maintenance"
+                placeholder="e.g. TCS Digital & Infosys DSE Mock Assessment Series Live Now!"
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
                 required
@@ -141,7 +141,7 @@ const Announcements = () => {
               <label className="text-sm font-bold text-textPrimary">Message</label>
               <textarea 
                 className="input-field h-32 resize-none"
-                placeholder="Write your message here..."
+                placeholder="e.g. Dear students, the all-India placement mock assessment is now live. Submit before Sunday 6:00 PM IST to get your score and detailed answer explanations on the leaderboard."
                 value={formData.message}
                 onChange={(e) => setFormData({...formData, message: e.target.value})}
                 required

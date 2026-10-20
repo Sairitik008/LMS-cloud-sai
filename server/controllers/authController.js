@@ -170,4 +170,42 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile };
+// @desc    Get all students
+// @route   GET /api/auth/students
+// @access  Private/Admin
+const getStudents = asyncHandler(async (req, res) => {
+  const students = await User.find({ role: 'student' })
+    .select('-password')
+    .sort({ createdAt: -1 });
+
+  res.json({ students, count: students.length });
+});
+
+// @desc    Delete student
+// @route   DELETE /api/auth/students/:id
+// @access  Private/Admin
+const deleteStudent = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('Student not found');
+  }
+
+  if (user.role === 'admin') {
+    res.status(400);
+    throw new Error('Cannot delete admin account');
+  }
+
+  await user.deleteOne();
+  res.json({ message: 'Student removed' });
+});
+
+module.exports = {
+  registerUser,
+  loginUser,
+  getUserProfile,
+  updateUserProfile,
+  getStudents,
+  deleteStudent,
+};

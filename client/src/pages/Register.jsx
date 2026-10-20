@@ -93,84 +93,84 @@ const Register = () => {
         </div>
 
         <div className="text-center mb-8 pt-4">
-          <h1 className="text-3xl font-bold text-accent mb-2">Build Your Profile</h1>
-          <p className="text-textMuted text-sm">Step {step} of 4</p>
+          <h1 className="text-3xl font-bold text-accent mb-2">Create Your Student Account</h1>
+          <p className="text-textMuted text-sm">Step {step} of 4 — Placement & Learning Profile</p>
         </div>
 
         <AnimatePresence mode="wait">
           {step === 1 && (
             <motion.div key="step1" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">Let's start with the basics!</h3>
+              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">Basic Account Information</h3>
               <div>
                 <label className="block text-sm font-medium mb-1 text-textPrimary">Full Name *</label>
-                <input type="text" className="input-field" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} />
+                <input type="text" className="input-field" placeholder="e.g. Rahul Sharma" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-textPrimary">Email Address *</label>
-                <input type="email" className="input-field" placeholder="john@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <input type="email" className="input-field" placeholder="e.g. rahul.sharma@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-textPrimary">Password *</label>
-                <input type="password" className="input-field" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <input type="password" className="input-field" placeholder="At least 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-textPrimary">Confirm Password *</label>
-                <input type="password" className="input-field" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                <input type="password" className="input-field" placeholder="Re-enter password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
               </div>
             </motion.div>
           )}
 
           {step === 2 && (
             <motion.div key="step2" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">What's your story?</h3>
+              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">College & Academic Details</h3>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Short Bio</label>
+                <label className="block text-sm font-medium mb-1 text-textPrimary">Short Bio / Career Goals</label>
                 <textarea 
-                  className="input-field h-24 resize-none" placeholder="I am a passionate developer who loves building things..."
+                  className="input-field h-24 resize-none" placeholder="e.g. Final year B.Tech CSE student preparing for SDE-1 placement drives and cracking Tier-1 tech interviews."
                   value={bio} onChange={(e) => setBio(e.target.value)}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Educational Background</label>
-                <input type="text" className="input-field" placeholder="e.g. BS Computer Science, Year 3" value={educationalBackground} onChange={(e) => setEducationalBackground(e.target.value)} />
+                <label className="block text-sm font-medium mb-1 text-textPrimary">Degree, Branch & College</label>
+                <input type="text" className="input-field" placeholder="e.g. B.Tech CSE, 3rd Year (NIT / JNTU / Anna Univ)" value={educationalBackground} onChange={(e) => setEducationalBackground(e.target.value)} />
               </div>
             </motion.div>
           )}
 
           {step === 3 && (
             <motion.div key="step3" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">What makes you... you?</h3>
+              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">Technical Skills & Interests</h3>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Skills (Comma separated)</label>
-                <input type="text" className="input-field" placeholder="e.g. React, Node.js, Python, Leadership" value={skills} onChange={(e) => setSkills(e.target.value)} />
+                <label className="block text-sm font-medium mb-1 text-textPrimary">Core Skills (Comma separated)</label>
+                <input type="text" className="input-field" placeholder="e.g. Java, Data Structures, Spring Boot, React, SQL" value={skills} onChange={(e) => setSkills(e.target.value)} />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-textPrimary">Hobbies (Comma separated)</label>
-                <input type="text" className="input-field" placeholder="e.g. Reading, Gaming, Hiking, Open Source" value={hobbies} onChange={(e) => setHobbies(e.target.value)} />
+                <label className="block text-sm font-medium mb-1 text-textPrimary">Interests & Hobbies (Comma separated)</label>
+                <input type="text" className="input-field" placeholder="e.g. Competitive Programming, Hackathons, Cricket, Chess" value={hobbies} onChange={(e) => setHobbies(e.target.value)} />
               </div>
             </motion.div>
           )}
 
           {step === 4 && (
             <motion.div key="step4" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">Where can people find your awesome code?</h3>
+              <h3 className="font-bold text-lg text-textPrimary text-center mb-4">Coding Profiles & Portfolio</h3>
               <div>
                 <label className="block text-sm font-medium mb-1 text-textPrimary flex items-center gap-2">
-                  <FaGithub /> GitHub Link
+                  <FaGithub /> GitHub Profile
                 </label>
-                <input type="url" className="input-field" placeholder="https://github.com/johndoe" value={github} onChange={(e) => setGithub(e.target.value)} />
+                <input type="url" className="input-field" placeholder="https://github.com/rahul-sharma" value={github} onChange={(e) => setGithub(e.target.value)} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-textPrimary flex items-center gap-2">
-                  <FaCode /> HackerRank Link
+                  <FaCode /> HackerRank / LeetCode Profile
                 </label>
-                <input type="url" className="input-field" placeholder="https://hackerrank.com/profile/johndoe" value={hackerrank} onChange={(e) => setHackerrank(e.target.value)} />
+                <input type="url" className="input-field" placeholder="https://leetcode.com/rahul_sharma" value={hackerrank} onChange={(e) => setHackerrank(e.target.value)} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-textPrimary flex items-center gap-2">
-                  <FaLinkedin color="#0072b1" /> LinkedIn Link
+                  <FaLinkedin color="#0072b1" /> LinkedIn Profile
                 </label>
-                <input type="url" className="input-field" placeholder="https://linkedin.com/in/johndoe" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} />
+                <input type="url" className="input-field" placeholder="https://linkedin.com/in/rahulsharma" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} />
               </div>
             </motion.div>
           )}

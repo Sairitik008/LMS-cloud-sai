@@ -14,7 +14,7 @@ const Navbar = ({ isOpen }) => {
         <FaSearch className="text-textMuted" />
         <input 
           type="text" 
-          placeholder="Search for tutorials, courses..." 
+          placeholder="Search courses, tutorials, mock tests..." 
           className="bg-transparent border-none outline-none text-sm w-full text-textPrimary placeholder:text-textMuted"
         />
       </div>

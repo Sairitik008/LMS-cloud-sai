@@ -144,7 +144,7 @@ const Settings = () => {
                     type="text" 
                     name="name"
                     className="input-field"
-                    placeholder="John Doe"
+                    placeholder="e.g. Rahul Sharma"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -158,7 +158,7 @@ const Settings = () => {
                     type="email" 
                     name="email"
                     className="input-field"
-                    placeholder="john@example.com"
+                    placeholder="e.g. rahul.sharma@gmail.com"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -174,7 +174,7 @@ const Settings = () => {
                     <label className="text-sm font-bold text-textPrimary">Short Bio</label>
                     <input 
                       type="text" name="bio" className="input-field"
-                      placeholder="I am a passionate developer..."
+                      placeholder="e.g. Pre-final year CSE student preparing for SDE-1 roles and campus placements."
                       value={formData.bio} onChange={handleChange}
                     />
                   </div>
@@ -183,7 +183,7 @@ const Settings = () => {
                     <label className="text-sm font-bold text-textPrimary">Educational Background</label>
                     <input 
                       type="text" name="educationalBackground" className="input-field"
-                      placeholder="e.g. BS Computer Science, Year 3"
+                      placeholder="e.g. B.Tech Computer Science (3rd Year), NIT / State University"
                       value={formData.educationalBackground} onChange={handleChange}
                     />
                   </div>
@@ -192,7 +192,7 @@ const Settings = () => {
                     <label className="text-sm font-bold text-textPrimary">Skills (Comma separated)</label>
                     <input 
                       type="text" name="skills" className="input-field"
-                      placeholder="e.g. React, Node.js, Python"
+                      placeholder="e.g. Java, Data Structures, Spring Boot, React, MySQL, Docker"
                       value={formData.skills} onChange={handleChange}
                     />
                   </div>
@@ -201,7 +201,7 @@ const Settings = () => {
                     <label className="text-sm font-bold text-textPrimary">Hobbies (Comma separated)</label>
                     <input 
                       type="text" name="hobbies" className="input-field"
-                      placeholder="e.g. Formally gaming, Hiking"
+                      placeholder="e.g. Competitive Coding, Hackathons, Cricket, Chess"
                       value={formData.hobbies} onChange={handleChange}
                     />
                   </div>
@@ -213,16 +213,16 @@ const Settings = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-textPrimary flex items-center gap-2"><FaGithub /> GitHub Link</label>
-                    <input type="url" name="github" className="input-field" placeholder="https://github.com/in/..." value={formData.socialLinks.github} onChange={handleSocialChange} />
+                    <label className="text-sm font-bold text-textPrimary flex items-center gap-2"><FaGithub /> GitHub Profile</label>
+                    <input type="url" name="github" className="input-field" placeholder="https://github.com/rahul-sharma" value={formData.socialLinks.github} onChange={handleSocialChange} />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-textPrimary flex items-center gap-2">HackerRank Link</label>
-                    <input type="url" name="hackerrank" className="input-field" placeholder="https://hackerrank.com/..." value={formData.socialLinks.hackerrank} onChange={handleSocialChange} />
+                    <label className="text-sm font-bold text-textPrimary flex items-center gap-2">LeetCode / HackerRank</label>
+                    <input type="url" name="hackerrank" className="input-field" placeholder="https://leetcode.com/rahul_sharma" value={formData.socialLinks.hackerrank} onChange={handleSocialChange} />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-textPrimary flex items-center gap-2"><FaLinkedin color="#0072b1"/> LinkedIn Link</label>
-                    <input type="url" name="linkedin" className="input-field" placeholder="https://linkedin.com/in/..." value={formData.socialLinks.linkedin} onChange={handleSocialChange} />
+                    <label className="text-sm font-bold text-textPrimary flex items-center gap-2"><FaLinkedin color="#0072b1"/> LinkedIn Profile</label>
+                    <input type="url" name="linkedin" className="input-field" placeholder="https://linkedin.com/in/rahulsharma" value={formData.socialLinks.linkedin} onChange={handleSocialChange} />
                   </div>
                 </div>
               </div>

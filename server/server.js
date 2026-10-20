@@ -2,10 +2,12 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const helmet = require('helmet');
 // const mongoSanitize = require('express-mongo-sanitize');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
+const { apiLimiter } = require('./middleware/rateLimitMiddleware');
 
 // Load env vars
 dotenv.config();
@@ -19,23 +21,39 @@ const app = express();
 app.use(express.json());
 
 // CORS
+const configuredFrontend = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
 const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:5173',
+  configuredFrontend,
   'http://localhost:5173',
   'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
 ];
+
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, curl)
+    // Allow requests with no origin (mobile apps, Postman, curl, server-to-server)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
+
+    const cleanOrigin = origin.replace(/\/+$/, '');
+
+    // Allow explicitly whitelisted origins
+    if (allowedOrigins.indexOf(cleanOrigin) !== -1) {
       return callback(null, true);
     }
-    // Allow any vercel.app subdomain
-    if (origin.endsWith('.vercel.app')) {
+
+    // Allow any vercel.app deployment (including branch previews)
+    if (cleanOrigin.endsWith('.vercel.app')) {
       return callback(null, true);
     }
-    return callback(new Error('Not allowed by CORS'));
+
+    // In non-production, allow any localhost/127.0.0.1 port
+    if (process.env.NODE_ENV !== 'production' && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanOrigin)) {
+      return callback(null, true);
+    }
+
+    // Safely reject disallowed origins without crashing Express
+    return callback(null, false);
   },
   credentials: true,
 }));
@@ -53,8 +71,17 @@ if (process.env.NODE_ENV === 'development') {
 
 // Routes
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok', uptime: process.uptime() });
+  const dbStatus = connectDB && mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  res.status(200).json({
+    status: 'ok',
+    uptime: process.uptime(),
+    database: dbStatus,
+    timestamp: new Date().toISOString(),
+  });
 });
+
+// Apply rate limiter to all API routes (except unthrottled /api/health above)
+app.use('/api', apiLimiter);
 
 // Import route files
 const authRoutes = require('./routes/authRoutes');
@@ -65,6 +92,7 @@ const mockTestRoutes = require('./routes/mockTestRoutes');
 const announcementRoutes = require('./routes/announcementRoutes');
 const resultRoutes = require('./routes/resultRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const cloudinaryRoutes = require('./routes/cloudinaryRoutes');
 
 // Mount routers
 app.use('/api/auth', authRoutes);
@@ -75,6 +103,7 @@ app.use('/api/mocktests', mockTestRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/results', resultRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/cloudinary', cloudinaryRoutes);
 
 // Error Middleware
 app.use(notFound);

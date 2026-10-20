@@ -15,10 +15,39 @@ const submitResult = asyncHandler(async (req, res) => {
     throw new Error('Mock test not found');
   }
 
+  if (!test.questions || test.questions.length === 0) {
+    res.status(400);
+    throw new Error('This mock test has no questions');
+  }
+
+  const safeAnswers = Array.isArray(answers) ? answers : [];
   let correctAnswers = 0;
-  const processedAnswers = answers.map((ans) => {
+
+  const processedAnswers = safeAnswers.map((ans) => {
     const question = test.questions[ans.questionIndex];
-    const isCorrect = question.correctAnswer === ans.selectedOption;
+    if (!question) {
+      return {
+        ...ans,
+        isCorrect: false,
+      };
+    }
+
+    const correctStr = String(question.correctAnswer ?? '').trim().toLowerCase();
+    const selectedStr = String(ans.selectedOption ?? '').trim().toLowerCase();
+
+    // Check direct equality
+    let isCorrect = (correctStr === selectedStr && correctStr !== '');
+
+    // Check index equality if correctAnswer was stored as an option index
+    if (!isCorrect && Array.isArray(question.options)) {
+      const optionIndex = question.options.findIndex(
+        (opt) => String(opt).trim().toLowerCase() === selectedStr
+      );
+      if (optionIndex !== -1 && String(optionIndex) === correctStr) {
+        isCorrect = true;
+      }
+    }
+
     if (isCorrect) correctAnswers++;
     return {
       ...ans,
@@ -26,15 +55,16 @@ const submitResult = asyncHandler(async (req, res) => {
     };
   });
 
-  const score = Math.round((correctAnswers / test.questions.length) * 100);
+  const totalQuestions = test.questions.length;
+  const score = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
 
   const result = new Result({
     student: req.user._id,
     mockTest: mockTestId,
     score,
-    totalQuestions: test.questions.length,
+    totalQuestions,
     correctAnswers,
-    timeTaken,
+    timeTaken: Number(timeTaken) || 0,
     answers: processedAnswers,
   });
 
@@ -90,7 +120,7 @@ const getLeaderboard = asyncHandler(async (req, res) => {
     {
       $project: {
         _id: 1,
-        avgScore: 1,
+        avgScore: { $round: ['$avgScore', 0] },
         testsTaken: 1,
         'studentInfo.name': 1,
         'studentInfo.avatar': 1,

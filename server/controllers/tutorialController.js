@@ -25,7 +25,7 @@ const getTutorials = asyncHandler(async (req, res) => {
     .skip(pageSize * (page - 1))
     .sort({ createdAt: -1 });
 
-  res.json({ tutorials, page, pages: Math.ceil(count / pageSize) });
+  res.json({ tutorials, page, pages: Math.ceil(count / pageSize), total: count });
 });
 
 // @desc    Get tutorial by ID

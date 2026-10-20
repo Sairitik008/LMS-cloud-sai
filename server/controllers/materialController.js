@@ -24,7 +24,7 @@ const getMaterials = asyncHandler(async (req, res) => {
     .skip(pageSize * (page - 1))
     .sort({ createdAt: -1 });
 
-  res.json({ materials, page, pages: Math.ceil(count / pageSize) });
+  res.json({ materials, page, pages: Math.ceil(count / pageSize), total: count });
 });
 
 // @desc    Get material by ID

@@ -1,12 +1,14 @@
+const path = require('path');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const User = require('./models/User');
+const connectDB = require('./config/db');
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const elevateUser = async (email) => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await connectDB();
     const user = await User.findOneAndUpdate(
       { email },
       { role: 'admin' },
