@@ -8,6 +8,7 @@ const getApiBaseUrl = () => {
 
 const api = axios.create({
   baseURL: getApiBaseUrl(),
+  timeout: 45000, // 45s timeout to handle Render free-tier cold-start wakeups without hanging forever
 });
 
 // Add a request interceptor to add the auth token & manage headers

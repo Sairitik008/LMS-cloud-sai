@@ -30,7 +30,17 @@ const Login = () => {
         navigate('/dashboard');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Invalid email or password');
+      let errMsg = error.response?.data?.message;
+      if (!errMsg) {
+        if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+          errMsg = 'Server connection timed out. The backend container may be waking up—please retry in 30 seconds.';
+        } else if (error.message === 'Network Error' || !error.response) {
+          errMsg = 'Unable to reach backend service. Please check your network or verify Render backend status.';
+        } else {
+          errMsg = 'Invalid email or password';
+        }
+      }
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }

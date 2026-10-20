@@ -64,7 +64,17 @@ const Register = () => {
       await register(name, email, password, extraData);
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      let errMsg = error.response?.data?.message;
+      if (!errMsg) {
+        if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+          errMsg = 'Server connection timed out. The backend container may be waking up—please retry in 30 seconds.';
+        } else if (error.message === 'Network Error' || !error.response) {
+          errMsg = 'Unable to reach backend service. Please check your connection or verify Render backend status.';
+        } else {
+          errMsg = 'Registration failed. Please try again.';
+        }
+      }
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }
