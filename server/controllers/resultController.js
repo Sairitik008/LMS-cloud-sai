@@ -106,8 +106,6 @@ const getLeaderboard = asyncHandler(async (req, res) => {
         testsTaken: { $sum: 1 },
       },
     },
-    { $sort: { avgScore: -1 } },
-    { $limit: 10 },
     {
       $lookup: {
         from: 'users',
@@ -117,6 +115,8 @@ const getLeaderboard = asyncHandler(async (req, res) => {
       },
     },
     { $unwind: '$studentInfo' },
+    { $sort: { avgScore: -1 } },
+    { $limit: 10 },
     {
       $project: {
         _id: 1,

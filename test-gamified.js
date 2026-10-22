@@ -1,4 +1,7 @@
 async function testFullRegistration() {
+  const API_URL = process.env.API_URL || 'http://localhost:5000/api';
+  const testPassword = process.env.TEST_USER_PASSWORD || 'password123';
+
   try {
     const ts = Date.now();
     const testEmail = `gamified_${ts}@example.com`;
@@ -7,7 +10,7 @@ async function testFullRegistration() {
     const payload = {
       name: 'Interactive Student',
       email: testEmail,
-      password: 'password123',
+      password: testPassword,
       bio: 'I am a test generated user',
       educationalBackground: 'Test University',
       skills: ['React', 'Nodejs'],
@@ -19,7 +22,7 @@ async function testFullRegistration() {
       }
     };
 
-    const registerRes = await fetch('http://localhost:5000/api/auth/register', {
+    const registerRes = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

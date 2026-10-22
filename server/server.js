@@ -19,11 +19,23 @@ const app = express();
 // Trust reverse proxy (Render, Vercel, Cloudflare, AWS ALB) for correct IP rate-limiting & SSL offloading
 app.set('trust proxy', 1);
 
-// Body parser
-app.use(express.json());
+// Body parser with raw prototype pollution verification
+app.use(express.json({
+  verify: (req, res, buf) => {
+    if (buf && buf.length) {
+      const str = buf.toString();
+      if (str.includes('"__proto__"') || str.includes('"constructor"') || str.includes('"prototype"')) {
+        const err = new Error('Prohibited prototype pollution key detected');
+        err.statusCode = 400;
+        throw err;
+      }
+    }
+  },
+}));
 
-// Express 5 compatible NoSQL Query Injection protection
-const { sanitizeNoSql } = require('./middleware/sanitizeMiddleware');
+// Express 5 compatible NoSQL Query Injection protection & strict input rejection
+const { rejectProhibitedInput, sanitizeNoSql } = require('./middleware/sanitizeMiddleware');
+app.use(rejectProhibitedInput);
 app.use(sanitizeNoSql);
 
 // CORS
@@ -85,7 +97,8 @@ app.get('/api/health', async (req, res) => {
       dbStatus = 'connected';
     }
   } catch (err) {
-    dbStatus = `error: ${err.message}`;
+    console.error('Health check database ping failed:', err);
+    dbStatus = 'unavailable';
   }
 
   res.status(200).json({
@@ -165,7 +178,11 @@ const gracefulShutdown = (signal) => {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-// Handle unhandled promise rejections
+// Handle unhandled promise rejections & uncaught exceptions
 process.on('unhandledRejection', (err) => {
-  console.error(`Unhandled Rejection Error: ${err.message}`);
+  console.error('💥 Unhandled Promise Rejection:', err);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('💥 Uncaught Exception:', err);
 });

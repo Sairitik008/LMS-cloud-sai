@@ -1,8 +1,7 @@
 # Environment Variables (set these in Vercel dashboard)
 .env
-.env.local
-.env.production
-.env.*.local
+.env.*
+!.env.example
 
 # Logs
 logs

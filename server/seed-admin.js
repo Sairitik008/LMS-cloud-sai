@@ -10,19 +10,22 @@ const createTestUser = async () => {
   try {
     await connectDB();
     
+    const adminEmail = process.env.ADMIN_SEED_EMAIL || 'admin@example.com';
+    const adminPassword = process.env.ADMIN_SEED_PASSWORD || 'password123';
+
     // Check if user exists
-    let user = await User.findOne({ email: 'admin@example.com' });
+    let user = await User.findOne({ email: adminEmail });
     if (user) await user.deleteOne();
 
     // Use PLAIN password - the pre('save') hook in User model will hash it
     user = await User.create({
-      name: 'Admin User',
-      email: 'admin@example.com',
-      password: 'password123', 
+      name: process.env.ADMIN_SEED_NAME || 'Admin User',
+      email: adminEmail,
+      password: adminPassword, 
       role: 'admin'
     });
 
-    console.log('Test Admin created: admin@example.com / password123');
+    console.log(`Admin account provisioned for: ${adminEmail}`);
     process.exit(0);
   } catch (err) {
     console.error(err);

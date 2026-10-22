@@ -46,17 +46,6 @@ const Login = () => {
     }
   };
 
-  const fillDemo = (role) => {
-    if (role === 'student') {
-      setEmail('student@example.com');
-      setPassword('password123');
-    } else {
-      setEmail('admin@example.com');
-      setPassword('password123');
-    }
-    toast.success(`${role === 'student' ? 'Student' : 'Admin'} credentials populated`);
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#070A11] px-4 py-12 relative overflow-hidden">
       {/* Background Ambience */}
@@ -79,29 +68,6 @@ const Login = () => {
           <p className="text-slate-400 text-xs sm:text-sm mt-1">
             Sign in to continue your placement preparation & mock tests
           </p>
-        </div>
-
-        {/* 1-Click Quick Demo Access */}
-        <div className="mb-6 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-          <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-2 text-center">
-            One-Click Demo Credentials
-          </p>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => fillDemo('student')}
-              className="py-2 px-3 rounded-lg bg-[#0C1220] hover:bg-sky-500/10 border border-white/[0.06] hover:border-sky-500/30 text-slate-300 hover:text-sky-400 transition-all text-center font-bold flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              🎓 Student Demo
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemo('admin')}
-              className="py-2 px-3 rounded-lg bg-[#0C1220] hover:bg-sky-500/10 border border-white/[0.06] hover:border-sky-500/30 text-slate-300 hover:text-sky-400 transition-all text-center font-bold flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              ⚡ Admin Demo
-            </button>
-          </div>
         </div>
 
         {/* Login Form */}

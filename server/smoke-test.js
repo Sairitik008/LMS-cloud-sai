@@ -13,9 +13,11 @@ const runSmokeTest = async () => {
   try {
     // 1. Admin Login
     console.log('--- Phase 1: Admin Authentication ---');
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.ADMIN_SEED_EMAIL || 'admin@example.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || process.env.ADMIN_SEED_PASSWORD || 'password123';
     const loginRes = await axios.post(`${API_URL}/auth/login`, {
-      email: 'admin@example.com',
-      password: 'password123'
+      email: adminEmail,
+      password: adminPassword
     });
     adminToken = loginRes.data.token;
     console.log('✅ Admin Login Successful');
@@ -59,7 +61,7 @@ const runSmokeTest = async () => {
     const regRes = await axios.post(`${API_URL}/auth/register`, {
       name: 'Audit Student',
       email: studentEmail,
-      password: 'password123'
+      password: process.env.STUDENT_PASSWORD || 'password123'
     });
     studentToken = regRes.data.token;
     console.log(`✅ Student Registration Successful (${studentEmail})`);

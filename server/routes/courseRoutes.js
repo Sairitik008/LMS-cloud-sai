@@ -9,16 +9,36 @@ const {
 } = require('../controllers/courseController');
 const { protect, admin } = require('../middleware/authMiddleware');
 const { uploadImage } = require('../middleware/uploadMiddleware');
+const { validateBody, validateQuery, validateParams } = require('../middleware/validateMiddleware');
+const {
+  paginationQuerySchema,
+  createCourseSchema,
+  updateCourseSchema,
+  paramIdSchema,
+} = require('../validators/schemas');
 
 router
   .route('/')
-  .get(getCourses)
-  .post(protect, admin, uploadImage.single('thumbnail'), createCourse);
+  .get(validateQuery(paginationQuerySchema), getCourses)
+  .post(
+    protect,
+    admin,
+    uploadImage.single('thumbnail'),
+    validateBody(createCourseSchema),
+    createCourse
+  );
 
 router
   .route('/:id')
-  .get(getCourseById)
-  .put(protect, admin, uploadImage.single('thumbnail'), updateCourse)
-  .delete(protect, admin, deleteCourse);
+  .get(validateParams(paramIdSchema), getCourseById)
+  .put(
+    protect,
+    admin,
+    validateParams(paramIdSchema),
+    uploadImage.single('thumbnail'),
+    validateBody(updateCourseSchema),
+    updateCourse
+  )
+  .delete(protect, admin, validateParams(paramIdSchema), deleteCourse);
 
 module.exports = router;

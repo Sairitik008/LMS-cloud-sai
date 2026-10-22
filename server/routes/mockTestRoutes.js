@@ -8,12 +8,29 @@ const {
   deleteTest,
 } = require('../controllers/mockTestController');
 const { protect, admin } = require('../middleware/authMiddleware');
+const { validateBody, validateQuery, validateParams } = require('../middleware/validateMiddleware');
+const {
+  paginationQuerySchema,
+  createMockTestSchema,
+  updateMockTestSchema,
+  paramIdSchema,
+} = require('../validators/schemas');
 
-router.route('/').get(getTests).post(protect, admin, createTest);
+router
+  .route('/')
+  .get(validateQuery(paginationQuerySchema), getTests)
+  .post(protect, admin, validateBody(createMockTestSchema), createTest);
+
 router
   .route('/:id')
-  .get(getTestById)
-  .put(protect, admin, updateTest)
-  .delete(protect, admin, deleteTest);
+  .get(validateParams(paramIdSchema), getTestById)
+  .put(
+    protect,
+    admin,
+    validateParams(paramIdSchema),
+    validateBody(updateMockTestSchema),
+    updateTest
+  )
+  .delete(protect, admin, validateParams(paramIdSchema), deleteTest);
 
 module.exports = router;

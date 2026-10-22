@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
+const Result = require('../models/Result');
 const generateToken = require('../utils/generateToken');
 
 // @desc    Register a new user
@@ -197,7 +198,10 @@ const deleteStudent = asyncHandler(async (req, res) => {
     throw new Error('Cannot delete admin account');
   }
 
-  await user.deleteOne();
+  await Promise.all([
+    user.deleteOne(),
+    Result.deleteMany({ student: user._id }),
+  ]);
   res.json({ message: 'Student removed' });
 });
 

@@ -1,10 +1,14 @@
 async function testProfileUpdate() {
+  const API_URL = process.env.API_URL || 'http://localhost:5000/api';
+  const email = process.env.TEST_STUDENT_EMAIL || 'student@example.com';
+  const password = process.env.TEST_STUDENT_PASSWORD || 'password123';
+
   try {
     console.log('1. Logging in as student...');
-    const loginRes = await fetch('http://localhost:5000/api/auth/login', {
+    const loginRes = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'student@example.com', password: 'password123' })
+      body: JSON.stringify({ email, password })
     });
     
     if (!loginRes.ok) throw new Error('Login failed');

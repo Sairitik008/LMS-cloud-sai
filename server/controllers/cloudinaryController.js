@@ -7,8 +7,9 @@ const cloudinary = require('../config/cloudinary');
  */
 const getUploadSignature = async (req, res) => {
   try {
-    const timestamp = Math.round(new Date().getTime() / 1000);
-    const folder = req.body.folder || 'lms/tutorials';
+    const ALLOWED_FOLDERS = ['lms/tutorials', 'lms/images', 'lms/materials'];
+    const requestedFolder = req.body.folder || 'lms/tutorials';
+    const folder = ALLOWED_FOLDERS.includes(requestedFolder) ? requestedFolder : 'lms/tutorials';
     
     // Parameters to sign
     const paramsToSign = {
@@ -29,7 +30,7 @@ const getUploadSignature = async (req, res) => {
       folder,
     });
   } catch (error) {
-    console.error('Cloudinary Signature Generation Error:', error.message);
+    console.error('Cloudinary Signature Generation Error:', error);
     res.status(500).json({ message: 'Failed to generate upload signature' });
   }
 };
