@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import ProtectedRoute from './components/routes/ProtectedRoute';
 import AdminRoute from './components/routes/AdminRoute';
+import { warmupServer } from './services/api';
 
 // Pages
 import Landing from './pages/Landing';
@@ -30,6 +31,10 @@ import Layout from './components/common/Layout';
 
 function App() {
   const location = useLocation();
+
+  useEffect(() => {
+    warmupServer();
+  }, []);
 
   return (
     <AnimatePresence mode="wait">

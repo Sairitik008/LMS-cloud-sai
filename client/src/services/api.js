@@ -33,30 +33,53 @@ api.interceptors.request.use(
   }
 );
 
+import toast from 'react-hot-toast';
+
 // Add a response interceptor to handle global errors and cold-start recovery
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Dismiss any active cold-start toast upon successful response
+    toast.dismiss('cold-start-wakeup');
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
-    // Render cold-start absorber: If backend is waking up (502, 503, 504 or Network Error), retry once after a brief delay
+    // Render cold-start absorber: If backend is waking up (502, 503, 504, 524, or Network Error), retry with informative UI feedback
     if (
       originalRequest &&
       !originalRequest._isRetry &&
-      (error.message === 'Network Error' || [502, 503, 504].includes(error.response?.status))
+      (error.message === 'Network Error' || [502, 503, 504, 524].includes(error.response?.status))
     ) {
       originalRequest._isRetry = true;
-      console.warn('Backend container may be waking from cold sleep. Retrying request in 2.5s...');
-      await new Promise((resolve) => setTimeout(resolve, 2500));
+      
+      // Notify student politely so they know the server is waking from cold sleep
+      toast.loading('⚡ Connecting to cloud server (waking up instance)... Please wait ~15s', {
+        id: 'cold-start-wakeup',
+        duration: 20000,
+      });
+
+      console.warn('Backend container waking from cold sleep. Retrying request in 3s...');
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       return api(originalRequest);
     }
 
+    // Dismiss waking toast if final error occurred
+    toast.dismiss('cold-start-wakeup');
+
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('userInfo');
-      // window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
+
+/**
+ * Pre-warm the backend on initial client load so it's warm by the time the user interacts
+ */
+export const warmupServer = () => {
+  // Fire-and-forget background ping; ignore errors
+  api.get('/health').catch(() => {});
+};
 
 export default api;

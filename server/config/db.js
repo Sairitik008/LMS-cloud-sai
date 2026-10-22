@@ -30,10 +30,14 @@ const connectDB = async () => {
   const fallbackUri = process.env.MONGO_URI_TEST || 'mongodb://127.0.0.1:27017/lms';
 
   const mongooseOptions = {
-    serverSelectionTimeoutMS: 5000,
-    maxPoolSize: 50, // Keep socket pool ready for simultaneous student test submissions
-    minPoolSize: 5,  // Maintain warm connection pool to eliminate socket spin-up latency
+    serverSelectionTimeoutMS: 15000, // 15s to absorb cloud DNS and cold-start WAN latency
+    connectTimeoutMS: 20000,
     socketTimeoutMS: 45000, // Prevent hanging sockets on network drops
+    maxPoolSize: 20, // Keep connection count safely below Atlas M0 limit (500) while maximizing throughput
+    minPoolSize: 2,  // Maintain warm connection pool to eliminate socket spin-up latency
+    family: 4, // Force IPv4 to eliminate 5-10s dual-stack IPv6 DNS fallback delays on cloud containers
+    heartbeatFrequencyMS: 10000, // Keep-alive ping interval to prevent firewall/NAT socket drops
+    retryWrites: true,
   };
 
   if (!primaryUri) {
