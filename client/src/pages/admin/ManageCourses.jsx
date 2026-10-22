@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaBook, FaList, FaCloudUploadAlt, FaTimes } from 'react-icons/fa';
 import useFetch from '../../hooks/useFetch';
@@ -25,18 +25,18 @@ const ManageCourses = () => {
 
   const { loading, fetchData } = useFetch();
 
-  const getCourses = async () => {
+  const getCourses = useCallback(async () => {
     try {
       const data = await fetchData('/courses');
       setCourses(data.courses || []);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getCourses();
-  }, []);
+  }, [getCourses]);
 
   const handleOpenModal = (course = null) => {
     setThumbnailFile(null);

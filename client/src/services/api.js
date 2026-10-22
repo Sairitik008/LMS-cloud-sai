@@ -45,22 +45,35 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Render cold-start absorber: If backend is waking up (502, 503, 504, 524, or Network Error), retry with informative UI feedback
-    if (
-      originalRequest &&
-      !originalRequest._isRetry &&
-      (error.message === 'Network Error' || [502, 503, 504, 524].includes(error.response?.status))
-    ) {
-      originalRequest._isRetry = true;
-      
-      // Notify student politely so they know the server is waking from cold sleep
-      toast.loading('⚡ Connecting to cloud server (waking up instance)... Please wait ~15s', {
-        id: 'cold-start-wakeup',
-        duration: 20000,
-      });
+    // Render cold-start & cooling-period absorber:
+    // If backend is waking up (502, 503, 504, 524, ECONNABORTED, or Network Error),
+    // progressively retry up to 3 times over 20-30s with informative UI feedback
+    const isColdStartError =
+      error.message === 'Network Error' ||
+      error.code === 'ECONNABORTED' ||
+      Boolean(error.message && error.message.includes('timeout')) ||
+      [502, 503, 504, 524].includes(error.response?.status);
 
-      console.warn('Backend container waking from cold sleep. Retrying request in 3s...');
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+    const MAX_RETRIES = 3;
+    const currentRetry = originalRequest?._retryCount || 0;
+
+    if (originalRequest && isColdStartError && currentRetry < MAX_RETRIES) {
+      originalRequest._retryCount = currentRetry + 1;
+
+      const delays = [3000, 5000, 8000];
+      const delayMs = delays[currentRetry] || 5000;
+
+      // Notify user politely so they know the server is waking from sleep
+      toast.loading(
+        `⚡ Connecting to cloud server (waking up instance... attempt ${currentRetry + 1}/${MAX_RETRIES}). Please wait ~${Math.round(delayMs / 1000)}s`,
+        {
+          id: 'cold-start-wakeup',
+          duration: 25000,
+        }
+      );
+
+      console.warn(`[UPTIME] Server waking from cooling period. Attempt ${currentRetry + 1}/${MAX_RETRIES}. Retrying in ${delayMs}ms...`);
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
       return api(originalRequest);
     }
 

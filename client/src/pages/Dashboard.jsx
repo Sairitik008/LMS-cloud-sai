@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -30,7 +30,7 @@ const Dashboard = () => {
     return "Good evening";
   };
 
-  const getDashboardData = async () => {
+  const getDashboardData = useCallback(async () => {
     try {
       const [coursesData, tutorialsData, materialsData, resultsData, testsData] = await Promise.all([
         fetchData('/courses'),
@@ -58,11 +58,11 @@ const Dashboard = () => {
     } catch (err) {
       console.error('Error fetching dashboard data', err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getDashboardData();
-  }, []);
+  }, [getDashboardData]);
 
   return (
     <AnimatedPage>

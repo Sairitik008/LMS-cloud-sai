@@ -2,20 +2,24 @@ name: LMS Keep-Alive Ping (Anti-Dormancy)
 
 on:
   schedule:
-    # Runs every 14 minutes to prevent Render free-tier spin-down (15-min idle limit)
-    # and keep MongoDB Atlas cluster active
-    - cron: '*/14 * * * *'
+    # Runs every 10 minutes to guarantee Render free-tier never enters the 15-min idle cooling period
+    # and keeps MongoDB Atlas shared cluster connection pool warm
+    - cron: '*/10 * * * *'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
 jobs:
   ping-lms:
     name: Ping LMS Live Health & Atlas Heartbeat
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Ping Live Healthcheck
+        env:
+          TARGET_URL: ${{ secrets.LIVE_BACKEND_URL || 'https://lms-cloud-sai.onrender.com' }}
         run: |
-          echo "Sending keep-alive ping to Render & MongoDB Atlas..."
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://lms-cloud-sai.onrender.com/api/health)
+          echo "Sending automated keep-alive ping to Render & MongoDB Atlas..."
+          STATUS=$(curl -s --retry 3 --retry-delay 5 --max-time 45 -o /dev/null -w "%{http_code}" "$TARGET_URL/api/health")
           echo "Response HTTP status: $STATUS"
           if [ "$STATUS" -eq 200 ] || [ "$STATUS" -eq 503 ]; then
             echo "✅ Keep-alive ping acknowledged (status $STATUS)."

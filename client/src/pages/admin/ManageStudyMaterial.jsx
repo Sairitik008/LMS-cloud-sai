@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaFilePdf, FaLink, FaStickyNote } from 'react-icons/fa';
 import useFetch from '../../hooks/useFetch';
@@ -19,18 +19,18 @@ const ManageStudyMaterial = () => {
 
   const { loading, fetchData } = useFetch();
 
-  const getMaterials = async () => {
+  const getMaterials = useCallback(async () => {
     try {
       const data = await fetchData('/materials');
       setMaterials(data.materials || []);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getMaterials();
-  }, []);
+  }, [getMaterials]);
 
   const handleOpenModal = (material = null) => {
     if (material) {

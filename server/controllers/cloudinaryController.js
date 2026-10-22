@@ -11,6 +11,8 @@ const getUploadSignature = async (req, res) => {
     const requestedFolder = req.body.folder || 'lms/tutorials';
     const folder = ALLOWED_FOLDERS.includes(requestedFolder) ? requestedFolder : 'lms/tutorials';
     
+    const timestamp = Math.round(new Date().getTime() / 1000);
+
     // Parameters to sign
     const paramsToSign = {
       timestamp: timestamp,

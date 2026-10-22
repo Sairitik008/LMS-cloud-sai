@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaGamepad, FaClock, FaQuestionCircle } from 'react-icons/fa';
 import useFetch from '../../hooks/useFetch';
@@ -22,18 +22,18 @@ const ManageMockTests = () => {
 
   const { loading, fetchData } = useFetch();
 
-  const getTests = async () => {
+  const getTests = useCallback(async () => {
     try {
       const data = await fetchData('/mocktests');
       setTests(data.tests || []);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getTests();
-  }, []);
+  }, [getTests]);
 
   const handleOpenModal = async (test = null) => {
     if (test) {
@@ -48,7 +48,7 @@ const ManageMockTests = () => {
           duration: fullTest.duration || test.duration || 30,
           questions: fullTest.questions || test.questions || []
         });
-      } catch (err) {
+      } catch {
         setFormData({
           title: test.title,
           description: test.description,

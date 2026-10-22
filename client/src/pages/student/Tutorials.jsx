@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaSearch, FaVideo, FaTag, FaPlayCircle } from 'react-icons/fa';
 import useFetch from '../../hooks/useFetch';
 import AnimatedPage from '../../components/common/AnimatedPage';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import EmptyState from '../../components/common/EmptyState';
+import DOMPurify from 'dompurify';
 
 const Tutorials = () => {
   const [tutorials, setTutorials] = useState([]);
@@ -15,7 +16,7 @@ const Tutorials = () => {
 
   const { loading, fetchData } = useFetch();
 
-  const getTutorials = async () => {
+  const getTutorials = useCallback(async () => {
     try {
       const data = await fetchData('/tutorials');
       setTutorials(data.tutorials || []);
@@ -23,11 +24,11 @@ const Tutorials = () => {
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getTutorials();
-  }, []);
+  }, [getTutorials]);
 
   const categories = ['All', ...new Set(tutorials.map(t => t.category))];
 
@@ -91,7 +92,7 @@ const Tutorials = () => {
 
             <div 
               className="prose prose-invert max-w-none text-textMuted leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: selectedTutorial.content }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedTutorial.content || '') }}
             />
           </div>
         </div>

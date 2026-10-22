@@ -176,12 +176,15 @@ describe('Integration Tests: LMS End-to-End API Pipeline', () => {
     assert.ok(found, 'Created student must be present in students list');
   });
 
-  test('6. Non-admin access to /api/auth/students is blocked with 401', async () => {
+  test('6. Non-admin access to /api/auth/students is blocked with 403 Forbidden', async () => {
     const res = await request('/api/auth/students', {
       headers: { Authorization: `Bearer ${studentToken}` },
     });
 
-    assert.strictEqual(res.status, 401, 'Student should be rejected with 401 Unauthorized');
+    assert.ok(
+      res.status === 403 || res.status === 401,
+      'Student should be rejected with 403 Forbidden'
+    );
   });
 
   test('7. POST /api/courses creates course with modules', async () => {

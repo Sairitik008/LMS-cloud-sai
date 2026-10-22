@@ -39,9 +39,14 @@ app.use(rejectProhibitedInput);
 app.use(sanitizeNoSql);
 
 // CORS
-const configuredFrontend = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
+const configuredFrontends = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map((url) => url.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
 const allowedOrigins = [
-  configuredFrontend,
+  ...configuredFrontends,
+  'https://lms-cloud-sai.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://127.0.0.1:5173',
@@ -60,8 +65,8 @@ app.use(cors({
       return callback(null, true);
     }
 
-    // Allow any vercel.app deployment (including branch previews)
-    if (cleanOrigin.endsWith('.vercel.app')) {
+    // Allow scoped project Vercel preview deployments (protects against arbitrary third-party .vercel.app domains)
+    if (/^https:\/\/(lms-cloud-sai|lms-frontend)(-[a-z0-9]+)?-sairitik008s-projects\.vercel\.app$/.test(cleanOrigin)) {
       return callback(null, true);
     }
 
@@ -121,6 +126,23 @@ setInterval(async () => {
     console.warn('⚠️ MongoDB keep-alive ping warning:', err.message);
   }
 }, KEEP_ALIVE_INTERVAL);
+
+// Automated Cloud Keep-Alive: Self-pings public Render web URL to reset 15-min idle spin-down counter
+const publicUrl = process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_BACKEND_URL;
+if (publicUrl && process.env.NODE_ENV !== 'test') {
+  const cleanPublicUrl = publicUrl.replace(/\/+$/, '');
+  const SELF_PING_INTERVAL = 11 * 60 * 1000; // Every 11 minutes (Render cooling-period threshold is 15 mins)
+  setInterval(async () => {
+    try {
+      const pingRes = await fetch(`${cleanPublicUrl}/api/health`);
+      if (pingRes.ok) {
+        console.log(`[UPTIME] Keep-alive ping acknowledged by ${cleanPublicUrl} (status: ${pingRes.status})`);
+      }
+    } catch (err) {
+      console.warn('[UPTIME] Automated keep-alive ping warning:', err.message);
+    }
+  }, SELF_PING_INTERVAL);
+}
 
 // Apply rate limiter to all API routes (except unthrottled /api/health above)
 app.use('/api', apiLimiter);

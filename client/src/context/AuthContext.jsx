@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const { data } = await api.get('/auth/me');
           setUser({ ...data, token: user.token });
-        } catch (error) {
+        } catch {
           localStorage.removeItem('userInfo');
           setUser(null);
         }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaPlus, FaTrash, FaBullhorn, FaCalendarAlt } from 'react-icons/fa';
 import useFetch from '../../hooks/useFetch';
@@ -18,18 +18,18 @@ const Announcements = () => {
 
   const { loading, fetchData } = useFetch();
 
-  const getAnnouncements = async () => {
+  const getAnnouncements = useCallback(async () => {
     try {
       const data = await fetchData('/announcements');
       setAnnouncements(data || []);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getAnnouncements();
-  }, []);
+  }, [getAnnouncements]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

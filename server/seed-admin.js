@@ -13,6 +13,13 @@ const createTestUser = async () => {
     const adminEmail = process.env.ADMIN_SEED_EMAIL || 'admin@example.com';
     const adminPassword = process.env.ADMIN_SEED_PASSWORD || 'password123';
 
+    if (process.env.NODE_ENV === 'production') {
+      if (!process.env.ADMIN_SEED_PASSWORD || process.env.ADMIN_SEED_PASSWORD === 'password123') {
+        console.error('❌ SECURITY FATAL: Seeding default or weak admin password in production is strictly prohibited.');
+        process.exit(1);
+      }
+    }
+
     // Check if user exists
     let user = await User.findOne({ email: adminEmail });
     if (user) await user.deleteOne();

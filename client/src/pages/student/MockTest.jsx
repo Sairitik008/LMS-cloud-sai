@@ -18,18 +18,18 @@ const MockTest = () => {
   const { loading, fetchData } = useFetch();
   const navigate = useNavigate();
 
-  const getTests = async () => {
+  const getTests = useCallback(async () => {
     try {
       const data = await fetchData('/mocktests');
       setTests(data.tests || []);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getTests();
-  }, []);
+  }, [getTests]);
 
   const startTest = (test) => {
     setActiveTest(test);

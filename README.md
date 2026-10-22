@@ -95,6 +95,13 @@ Copy `server/.env.example` to `server/.env` and fill in:
 
 ---
 
-## 📄 License
+## 📄 License & Intellectual Property Notice
 
-MIT © Sairitik008
+**PROPRIETARY & CONFIDENTIAL — ALL RIGHTS RESERVED**
+
+Copyright © 2026 Sairitik Naidu (Sairitik008). 
+
+This repository and all associated source code, design assets, database schemas, and documentation are strictly proprietary. 
+- **Unauthorized copying, cloning, scraping, redistribution, modification, reverse engineering, or commercial deployment** of this codebase, in whole or in part, is strictly prohibited.
+- Any unauthorized use or deployment without explicit written permission from the copyright owner will be subject to immediate **DMCA takedown notices** and legal action.
+- See the [LICENSE](LICENSE) file for complete legal terms.

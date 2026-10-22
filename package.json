@@ -13,6 +13,8 @@
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",
     "postinstall": "cd server && npm install"
   },
+  "private": true,
+  "license": "UNLICENSED",
   "dependencies": {
     "concurrently": "^8.2.2"
   }

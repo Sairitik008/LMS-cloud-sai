@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBook, FaChevronDown, FaChevronUp, FaFileAlt, FaSearch } from 'react-icons/fa';
 import useFetch from '../../hooks/useFetch';
 import AnimatedPage from '../../components/common/AnimatedPage';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import EmptyState from '../../components/common/EmptyState';
+import DOMPurify from 'dompurify';
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -14,18 +15,18 @@ const Courses = () => {
 
   const { loading, fetchData } = useFetch();
 
-  const getCourses = async () => {
+  const getCourses = useCallback(async () => {
     try {
       const data = await fetchData('/courses');
       setCourses(data.courses || []);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getCourses();
-  }, []);
+  }, [getCourses]);
 
   const filteredCourses = courses.filter(c => 
     c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,7 +94,7 @@ const Courses = () => {
                           >
                             <div 
                               className="prose prose-invert max-w-none"
-                              dangerouslySetInnerHTML={{ __html: module.content }} 
+                              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(module.content || '') }} 
                             />
                           </motion.div>
                         )}

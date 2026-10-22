@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaSearch, FaUserCircle, FaEnvelope, FaTrash } from 'react-icons/fa';
 import useFetch from '../../hooks/useFetch';
 import AnimatedPage from '../../components/common/AnimatedPage';
@@ -11,18 +11,18 @@ const ManageStudents = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { loading, fetchData } = useFetch();
 
-  const getStudents = async () => {
+  const getStudents = useCallback(async () => {
     try {
       const data = await fetchData('/auth/students'); 
       setStudents(data.students || []);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getStudents();
-  }, []);
+  }, [getStudents]);
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to remove this student account?')) {

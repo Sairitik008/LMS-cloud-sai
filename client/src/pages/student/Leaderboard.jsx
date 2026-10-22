@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaTrophy, FaUserCircle, FaMedal } from 'react-icons/fa';
 import useFetch from '../../hooks/useFetch';
@@ -9,18 +9,18 @@ const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const { loading, fetchData } = useFetch();
 
-  const getLeaderboard = async () => {
+  const getLeaderboard = useCallback(async () => {
     try {
       const data = await fetchData('/results/leaderboard');
       setLeaderboard(data || []);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getLeaderboard();
-  }, []);
+  }, [getLeaderboard]);
 
   const getRankColor = (index) => {
     switch (index) {

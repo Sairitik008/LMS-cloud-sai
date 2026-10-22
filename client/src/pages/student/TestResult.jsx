@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaTrophy, FaCheckCircle, FaTimesCircle, FaClock, FaRedo, FaList } from 'react-icons/fa';
@@ -9,14 +9,14 @@ const TestResult = () => {
   const [result, setResult] = useState(null);
   const { loading, fetchData } = useFetch();
 
-  const getResult = async () => {
+  const getResult = useCallback(async () => {
     try {
       const data = await fetchData(`/results/${id}`);
       if (data && data._id) {
         setResult(data);
         return;
       }
-    } catch (e) {
+    } catch {
       // Fallback to searching /results/me
     }
 
@@ -27,11 +27,11 @@ const TestResult = () => {
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [id, fetchData]);
 
   useEffect(() => {
     getResult();
-  }, [id]);
+  }, [getResult]);
 
   if (loading || !result) {
     return (

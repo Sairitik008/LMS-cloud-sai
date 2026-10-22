@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaVideo, FaTag, FaCloudUploadAlt, FaTimes, FaFilm } from 'react-icons/fa';
 import useFetch from '../../hooks/useFetch';
@@ -31,18 +31,18 @@ const ManageTutorials = () => {
 
   const { loading, fetchData } = useFetch();
 
-  const getTutorials = async () => {
+  const getTutorials = useCallback(async () => {
     try {
       const data = await fetchData('/tutorials');
       setTutorials(data.tutorials || []);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getTutorials();
-  }, []);
+  }, [getTutorials]);
 
   const handleOpenModal = (tutorial = null) => {
     setThumbnailFile(null);

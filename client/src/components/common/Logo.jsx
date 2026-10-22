@@ -6,8 +6,8 @@ const Logo = ({
   textColor = "text-textPrimary",
   textSize = "text-xl",
   showBadge = true,
-  subtitle = null,
-  philosophicalTagline = false
+  _subtitle = null,
+  _philosophicalTagline = false
 }) => {
   return (
     <div className="flex items-center gap-3.5 select-none group">

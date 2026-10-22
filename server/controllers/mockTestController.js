@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler');
+const jwt = require('jsonwebtoken');
 const MockTest = require('../models/MockTest');
+const User = require('../models/User');
 const escapeRegex = require('../utils/escapeRegex');
 
 // @desc    Get all tests
@@ -31,13 +33,31 @@ const getTests = asyncHandler(async (req, res) => {
 
 // @desc    Get test by ID
 // @route   GET /api/tests/:id
-// @access  Public
+// @access  Public (Masks correctAnswer unless authenticated as admin)
 const getTestById = asyncHandler(async (req, res) => {
-  const test = await MockTest.findById(req.params.id);
+  let isAdmin = false;
+
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select('role');
+      if (user && user.role === 'admin') {
+        isAdmin = true;
+      }
+    } catch (e) {
+      // Ignore token failure, treat as student/public visitor
+    }
+  }
+
+  const query = MockTest.findById(req.params.id);
+  if (!isAdmin) {
+    query.select('-questions.correctAnswer');
+  }
+
+  const test = await query;
 
   if (test) {
-    // If student is requesting, maybe hide correct answers unless they are reviewing?
-    // For simplicity, we'll return all, but client should handle visibility.
     res.json(test);
   } else {
     res.status(404);

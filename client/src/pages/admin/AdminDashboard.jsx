@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaUsers, FaBook, FaPuzzlePiece, FaBullhorn, FaPlus, FaCog } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -15,18 +15,18 @@ const AdminDashboard = () => {
 
   const { loading, fetchData } = useFetch();
 
-  const getStats = async () => {
+  const getStats = useCallback(async () => {
     try {
       const data = await fetchData('/admin/stats');
       setStats(data);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     getStats();
-  }, []);
+  }, [getStats]);
 
   return (
     <div className="p-6 md:p-10 bg-background min-h-screen">
