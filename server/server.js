@@ -72,16 +72,42 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Routes
-app.get('/api/health', (req, res) => {
-  const dbStatus = connectDB && mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+// Routes - Health Check with active MongoDB Atlas ping
+app.get('/api/health', async (req, res) => {
+  let dbStatus = 'disconnected';
+  let dbLatency = null;
+
+  try {
+    if (mongoose.connection.readyState === 1 && mongoose.connection.db) {
+      const start = Date.now();
+      await mongoose.connection.db.command({ ping: 1 });
+      dbLatency = `${Date.now() - start}ms`;
+      dbStatus = 'connected';
+    }
+  } catch (err) {
+    dbStatus = `error: ${err.message}`;
+  }
+
   res.status(200).json({
     status: 'ok',
     uptime: process.uptime(),
     database: dbStatus,
+    dbLatency,
     timestamp: new Date().toISOString(),
   });
 });
+
+// Periodic keep-alive ping to MongoDB Atlas (prevents cluster dormancy & idle connection drops)
+const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // Every 10 minutes
+setInterval(async () => {
+  try {
+    if (mongoose.connection.readyState === 1 && mongoose.connection.db) {
+      await mongoose.connection.db.command({ ping: 1 });
+    }
+  } catch (err) {
+    console.warn('⚠️ MongoDB keep-alive ping warning:', err.message);
+  }
+}, KEEP_ALIVE_INTERVAL);
 
 // Apply rate limiter to all API routes (except unthrottled /api/health above)
 app.use('/api', apiLimiter);
