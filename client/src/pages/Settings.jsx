@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaUserCircle, FaEnvelope, FaLock, FaCamera, FaSave, FaGithub, FaLinkedin } from 'react-icons/fa';
+import { 
+  FaUserCircle, FaEnvelope, FaLock, FaCamera, 
+  FaSave, FaGithub, FaLinkedin, FaGraduationCap, 
+  FaCode, FaHeart, FaShieldAlt, FaExternalLinkAlt, FaCheckCircle
+} from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import AnimatedPage from '../components/common/AnimatedPage';
 
@@ -80,9 +84,6 @@ const Settings = () => {
     
     if (avatarFile) {
       submitData.append('avatar', avatarFile);
-    } else if (user.avatar && !previewUrl) {
-      // Logic if they clear the avatar, though we didn't add a clear button here for simplicity.
-      submitData.append('avatar', '');
     }
 
     try {
@@ -94,51 +95,101 @@ const Settings = () => {
     }
   };
 
+  const parsedSkills = formData.skills
+    ? formData.skills.split(',').map(s => s.trim()).filter(Boolean)
+    : [];
+
   return (
     <AnimatedPage>
-      <div className="max-w-3xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-textPrimary">Profile Settings</h1>
-          <p className="text-textMuted mt-1">Manage your account details and personalization.</p>
+      <div className="max-w-4xl mx-auto space-y-8 pb-16">
+        
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2 h-2 rounded-full bg-sky-400"></span>
+              <span className="text-[11px] font-mono font-bold text-sky-400 uppercase tracking-widest">
+                ENGINEER PROFILE & SETTINGS
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Personal Profile & Preferences
+            </h1>
+            <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-xl">
+              Keep your profile, target technologies, and resume social handles current for mock drive reviews.
+            </p>
+          </div>
+          <span className="badge-purple text-xs">
+            {user?.role === 'admin' ? 'Faculty Admin' : 'Student Candidate'}
+          </span>
         </div>
 
+        {/* Profile Card Container */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card overflow-hidden"
+          className="glass-card rounded-2xl overflow-hidden border border-white/[0.08] shadow-xl"
         >
-          <div className="h-32 bg-gradient-to-r from-accent/40 to-purple-500/40 relative"></div>
+          {/* Cover Gradient */}
+          <div className="h-32 sm:h-40 bg-gradient-to-r from-sky-900/60 via-indigo-900/40 to-slate-900/80 relative overflow-hidden">
+            <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+          </div>
           
-          <div className="px-8 pb-8">
-            <div className="relative -mt-16 mb-8 flex justify-between items-end">
-              <div className="relative group">
-                <div className="w-32 h-32 rounded-full border-4 border-card bg-background overflow-hidden relative shadow-xl">
-                  {previewUrl ? (
-                    <img src={previewUrl} alt="Avatar Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-accent/20 text-accent text-5xl">
-                      <FaUserCircle />
-                    </div>
-                  )}
-                  <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white">
-                    <FaCamera className="text-2xl mb-1" />
-                    <span className="text-xs font-bold">Change</span>
-                    <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-                  </label>
+          <div className="px-6 sm:px-8 pb-8">
+            {/* Avatar & Header Identity */}
+            <div className="relative -mt-16 sm:-mt-20 mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div className="flex items-end gap-4">
+                <div className="relative group">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border-4 border-[#070B14] bg-slate-900 overflow-hidden relative shadow-2xl">
+                    {previewUrl ? (
+                      <img src={previewUrl} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-sky-500/10 text-sky-400 text-4xl">
+                        <FaUserCircle />
+                      </div>
+                    )}
+                    <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white backdrop-blur-[2px]">
+                      <FaCamera className="text-xl mb-1 text-sky-400" />
+                      <span className="text-[10px] font-bold">Update Photo</span>
+                      <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mb-1">
+                  <h2 className="text-lg sm:text-xl font-extrabold text-white leading-tight">
+                    {formData.name || 'Your Name'}
+                  </h2>
+                  <p className="text-xs text-slate-400 font-mono">
+                    {formData.email || 'student@domain.edu'}
+                  </p>
                 </div>
               </div>
-              <div className="mb-2">
-                <span className="px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-bold capitalize">
-                  {user?.role} Account
-                </span>
-              </div>
+
+              {/* Skills Preview Pills */}
+              {parsedSkills.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 max-w-sm justify-start sm:justify-end">
+                  {parsedSkills.slice(0, 4).map((skill, i) => (
+                    <span key={i} className="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-white/[0.04] text-sky-300 border border-sky-500/20">
+                      {skill}
+                    </span>
+                  ))}
+                  {parsedSkills.length > 4 && (
+                    <span className="text-[10px] text-slate-500 font-mono">
+                      +{parsedSkills.length - 4} more
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-textPrimary flex items-center gap-2">
-                    <FaUserCircle className="text-accent" /> Full Name
+              
+              {/* Primary Identity Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <FaUserCircle className="text-sky-400" /> Full Display Name
                   </label>
                   <input 
                     type="text" 
@@ -150,9 +201,9 @@ const Settings = () => {
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-textPrimary flex items-center gap-2">
-                    <FaEnvelope className="text-accent" /> Email Address
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <FaEnvelope className="text-sky-400" /> Academic / Personal Email
                   </label>
                   <input 
                     type="email" 
@@ -166,91 +217,137 @@ const Settings = () => {
                 </div>
               </div>
 
-              <div className="space-y-4 border-t border-border pt-6 mt-6">
-                <h3 className="font-bold text-lg text-accent">Extended Details</h3>
+              {/* Placement & Developer Details */}
+              <div className="space-y-4 border-t border-white/[0.06] pt-6">
+                <div>
+                  <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
+                    <FaGraduationCap className="text-sky-400" /> Academic & Career Background
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Information shown on your student cohort profile and mock interview evaluations.
+                  </p>
+                </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-textPrimary">Short Bio</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-1.5 md:col-span-2">
+                    <label className="text-xs font-bold text-slate-300">Bio / Career Objective</label>
                     <input 
                       type="text" name="bio" className="input-field"
-                      placeholder="e.g. Pre-final year CSE student preparing for SDE-1 roles and campus placements."
+                      placeholder="e.g. 3rd year CSE undergraduate preparing for SDE roles, passionate about distributed systems."
                       value={formData.bio} onChange={handleChange}
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-textPrimary">Educational Background</label>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300">College & Degree</label>
                     <input 
                       type="text" name="educationalBackground" className="input-field"
-                      placeholder="e.g. B.Tech Computer Science (3rd Year), NIT / State University"
+                      placeholder="e.g. B.Tech Computer Science, NIT / State University"
                       value={formData.educationalBackground} onChange={handleChange}
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-textPrimary">Skills (Comma separated)</label>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                      <FaCode className="text-indigo-400" /> Core Tech Skills (Comma separated)
+                    </label>
                     <input 
                       type="text" name="skills" className="input-field"
-                      placeholder="e.g. Java, Data Structures, Spring Boot, React, MySQL, Docker"
+                      placeholder="e.g. Java, Spring Boot, React, DSA, PostgreSQL, Docker"
                       value={formData.skills} onChange={handleChange}
                     />
                   </div>
+                </div>
+              </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-textPrimary">Hobbies (Comma separated)</label>
+              {/* Coding & Professional Handles */}
+              <div className="space-y-4 border-t border-white/[0.06] pt-6">
+                <div>
+                  <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
+                    <FaCode className="text-sky-400" /> Professional Coding Handles
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Link your public repositories and competitive coding profiles.
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                      <FaGithub /> GitHub
+                    </label>
                     <input 
-                      type="text" name="hobbies" className="input-field"
-                      placeholder="e.g. Competitive Coding, Hackathons, Cricket, Chess"
-                      value={formData.hobbies} onChange={handleChange}
+                      type="url" name="github" className="input-field text-xs" 
+                      placeholder="https://github.com/username" 
+                      value={formData.socialLinks.github} 
+                      onChange={handleSocialChange} 
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                      LeetCode / HackerRank
+                    </label>
+                    <input 
+                      type="url" name="hackerrank" className="input-field text-xs" 
+                      placeholder="https://leetcode.com/username" 
+                      value={formData.socialLinks.hackerrank} 
+                      onChange={handleSocialChange} 
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                      <FaLinkedin className="text-sky-400" /> LinkedIn
+                    </label>
+                    <input 
+                      type="url" name="linkedin" className="input-field text-xs" 
+                      placeholder="https://linkedin.com/in/username" 
+                      value={formData.socialLinks.linkedin} 
+                      onChange={handleSocialChange} 
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4 border-t border-border pt-6 mt-6">
-                <h3 className="font-bold text-lg text-accent">Online Presence</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-textPrimary flex items-center gap-2"><FaGithub /> GitHub Profile</label>
-                    <input type="url" name="github" className="input-field" placeholder="https://github.com/rahul-sharma" value={formData.socialLinks.github} onChange={handleSocialChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-textPrimary flex items-center gap-2">LeetCode / HackerRank</label>
-                    <input type="url" name="hackerrank" className="input-field" placeholder="https://leetcode.com/rahul_sharma" value={formData.socialLinks.hackerrank} onChange={handleSocialChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-textPrimary flex items-center gap-2"><FaLinkedin color="#0072b1"/> LinkedIn Profile</label>
-                    <input type="url" name="linkedin" className="input-field" placeholder="https://linkedin.com/in/rahulsharma" value={formData.socialLinks.linkedin} onChange={handleSocialChange} />
-                  </div>
+              {/* Security Credentials */}
+              <div className="space-y-3 border-t border-white/[0.06] pt-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
+                    <FaShieldAlt className="text-amber-400" /> Security & Authentication
+                  </h3>
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    Encrypted with Argon2/Bcrypt
+                  </span>
+                </div>
+                <div className="max-w-md space-y-1.5">
+                  <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <FaLock className="text-amber-400" /> Update Password (Optional)
+                  </label>
+                  <input 
+                    type="password" 
+                    name="password"
+                    className="input-field"
+                    placeholder="Leave blank to keep existing password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
 
-              <div className="space-y-2 border-t border-border pt-6 mt-6">
-                <h3 className="font-bold text-lg text-red-400 mb-4">Security</h3>
-                <label className="text-sm font-bold text-textPrimary flex items-center gap-2">
-                  <FaLock className="text-accent" /> New Password
-                </label>
-                <input 
-                  type="password" 
-                  name="password"
-                  className="input-field max-w-md"
-                  placeholder="Leave blank to keep current password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="pt-6 border-t border-border flex justify-end">
+              {/* Form Submit Footer */}
+              <div className="pt-6 border-t border-white/[0.06] flex items-center justify-between">
+                <span className="text-xs text-slate-500 hidden sm:inline">
+                  Updates reflect instantly across your learning dashboard.
+                </span>
                 <button 
                   type="submit" 
-                  className="btn-primary flex items-center gap-2"
+                  className="btn-primary py-2.5 px-6 text-xs font-bold flex items-center gap-2"
                   disabled={loading}
                 >
-                  {loading ? 'Saving...' : (
+                  {loading ? (
+                    'Saving Updates...'
+                  ) : (
                     <>
-                      <FaSave /> Save Changes
+                      <FaSave className="text-[11px]" /> Save Profile Changes
                     </>
                   )}
                 </button>

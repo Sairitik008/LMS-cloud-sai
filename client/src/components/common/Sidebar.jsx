@@ -39,25 +39,25 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     }
   ] : [
     {
-      label: 'OVERVIEW',
+      label: 'MY LEARNING HUB',
       items: [
-        { name: 'Dashboard', icon: <FaThLarge />, path: '/dashboard' }
+        { name: 'Student Dashboard', icon: <FaThLarge />, path: '/dashboard' }
       ]
     },
     {
-      label: 'PLACEMENT PREP',
+      label: 'PREPARATION ARENA',
       items: [
-        { name: 'My Courses', icon: <FaBook />, path: '/courses' },
-        { name: 'Tutorials', icon: <FaVideo />, path: '/tutorials' },
-        { name: 'Study Materials', icon: <FaFileAlt />, path: '/materials' },
-        { name: 'Mock Tests', icon: <FaTrophy />, path: '/mocktests' }
+        { name: 'Placement Courses', icon: <FaBook />, path: '/courses' },
+        { name: 'Video Tutorials', icon: <FaVideo />, path: '/tutorials' },
+        { name: 'SDE & GATE Notes', icon: <FaFileAlt />, path: '/materials' },
+        { name: 'Mock Assessments', icon: <FaTrophy />, path: '/mocktests' }
       ]
     },
     {
       label: 'CAMPUS COMMUNITY',
       items: [
-        { name: 'Leaderboard', icon: <FaUserGraduate />, path: '/leaderboard' },
-        { name: 'Settings', icon: <FaCog />, path: '/settings' }
+        { name: 'All-India Leaderboard', icon: <FaUserGraduate />, path: '/leaderboard' },
+        { name: 'Profile & Settings', icon: <FaCog />, path: '/settings' }
       ]
     }
   ];
