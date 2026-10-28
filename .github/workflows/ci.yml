@@ -41,9 +41,14 @@ jobs:
 
     services:
       mongodb:
-        image: mongo:8.0
+        image: mongo:7.0
         ports:
           - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout Code
@@ -58,7 +63,7 @@ jobs:
 
       - name: Install Server Dependencies
         working-directory: server
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run Backend Unit & Integration Tests
         working-directory: server
@@ -66,5 +71,6 @@ jobs:
           NODE_ENV: test
           PORT: 5001
           JWT_SECRET: ci_secret_key_super_secure_12345
+          MONGO_URI: mongodb://127.0.0.1:27017/lms_ci
           MONGO_URI_TEST: mongodb://127.0.0.1:27017/lms_ci
         run: npm test
