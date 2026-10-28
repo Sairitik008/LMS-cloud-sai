@@ -50,11 +50,23 @@ const userSchema = new mongoose.Schema(
       hackerrank: { type: String, default: '' },
       linkedin: { type: String, default: '' },
     },
+    isPermanent: {
+      type: Boolean,
+      default: false,
+    },
+    expiresAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Native MongoDB TTL Index: Auto-evicts inactive guest/demo student accounts after their designated expiry date
+// Core accounts (admins & benchmark seed accounts) have expiresAt: null and are NEVER deleted by MongoDB
+userSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // Encrypt password using bcrypt
 userSchema.pre('save', async function () {

@@ -61,16 +61,22 @@ api.interceptors.response.use(
       originalRequest._retryCount = currentRetry + 1;
 
       const delays = [3000, 5000, 8000];
-      const delayMs = delays[currentRetry] || 5000;
+      const retryAfterHeader = error.response?.headers?.['retry-after'];
+      const retryAfterSec = retryAfterHeader ? parseInt(retryAfterHeader, 10) : null;
+      const delayMs = retryAfterSec && Number.isFinite(retryAfterSec) && retryAfterSec > 0
+        ? retryAfterSec * 1000
+        : (delays[currentRetry] || 5000);
 
-      // Notify user politely so they know the server is waking from sleep
-      toast.loading(
-        `⚡ Connecting to cloud server (waking up instance... attempt ${currentRetry + 1}/${MAX_RETRIES}). Please wait ~${Math.round(delayMs / 1000)}s`,
-        {
-          id: 'cold-start-wakeup',
-          duration: 25000,
-        }
-      );
+      // Only show user-facing toast if not a silent background request (e.g. warmupServer)
+      if (!originalRequest.silent && !originalRequest.skipColdStartToast) {
+        toast.loading(
+          `⚡ Connecting to cloud server (waking up instance... attempt ${currentRetry + 1}/${MAX_RETRIES}). Please wait ~${Math.round(delayMs / 1000)}s`,
+          {
+            id: 'cold-start-wakeup',
+            duration: 25000,
+          }
+        );
+      }
 
       console.warn(`[UPTIME] Server waking from cooling period. Attempt ${currentRetry + 1}/${MAX_RETRIES}. Retrying in ${delayMs}ms...`);
       await new Promise((resolve) => setTimeout(resolve, delayMs));
@@ -80,7 +86,7 @@ api.interceptors.response.use(
     // Dismiss waking toast if final error occurred
     toast.dismiss('cold-start-wakeup');
 
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 401 && !originalRequest?.url?.includes('/auth/login')) {
       localStorage.removeItem('userInfo');
     }
     return Promise.reject(error);
@@ -91,8 +97,8 @@ api.interceptors.response.use(
  * Pre-warm the backend on initial client load so it's warm by the time the user interacts
  */
 export const warmupServer = () => {
-  // Fire-and-forget background ping; ignore errors
-  api.get('/health').catch(() => {});
+  // Fire-and-forget background ping; runs silently without displaying blocking user toasts
+  api.get('/health', { silent: true, skipColdStartToast: true }).catch(() => {});
 };
 
 export default api;

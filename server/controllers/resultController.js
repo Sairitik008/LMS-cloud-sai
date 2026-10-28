@@ -69,6 +69,23 @@ const submitResult = asyncHandler(async (req, res) => {
   });
 
   const savedResult = await result.save();
+
+  // Storage Cap: Retain only the most recent 10 results per student to prevent demo database bloat
+  const MAX_RESULTS_PER_STUDENT = parseInt(process.env.MAX_RESULTS_PER_STUDENT, 10) || 10;
+  try {
+    const excessResults = await Result.find({ student: req.user._id })
+      .sort({ createdAt: -1 })
+      .select('_id')
+      .skip(MAX_RESULTS_PER_STUDENT);
+
+    if (excessResults.length > 0) {
+      const idsToDelete = excessResults.map((r) => r._id);
+      await Result.deleteMany({ _id: { $in: idsToDelete } });
+    }
+  } catch (pruneErr) {
+    console.warn('⚠️ Non-critical result storage cap pruning warning:', pruneErr.message);
+  }
+
   res.status(201).json(savedResult);
 });
 

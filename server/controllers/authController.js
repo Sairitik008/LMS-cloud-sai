@@ -16,6 +16,13 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('User already exists');
   }
 
+  const isCoreSeedAccount = email === (process.env.ADMIN_SEED_EMAIL || 'admin@example.com') ||
+                            email === (process.env.STUDENT_SEED_EMAIL || 'student@example.com');
+
+  // Temporary guest accounts auto-expire after 30 days of inactivity to keep MongoDB M0 storage bounded
+  const GUEST_TTL_DAYS = parseInt(process.env.GUEST_USER_TTL_DAYS, 10) || 30;
+  const expiresAt = isCoreSeedAccount ? null : new Date(Date.now() + GUEST_TTL_DAYS * 24 * 60 * 60 * 1000);
+
   const user = await User.create({
     name,
     email,
@@ -26,6 +33,8 @@ const registerUser = asyncHandler(async (req, res) => {
     skills,
     hobbies,
     socialLinks: socialLinks || { github: '', hackerrank: '', linkedin: '' },
+    isPermanent: isCoreSeedAccount,
+    expiresAt,
   });
 
   if (user) {
@@ -51,6 +60,13 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
+    // Extend guest account expiry on active login so active learners are never prematurely evicted
+    if (user.role === 'student' && !user.isPermanent) {
+      const GUEST_TTL_DAYS = parseInt(process.env.GUEST_USER_TTL_DAYS, 10) || 30;
+      user.expiresAt = new Date(Date.now() + GUEST_TTL_DAYS * 24 * 60 * 60 * 1000);
+      await user.save();
+    }
+
     res.json({
       _id: user._id,
       name: user.name,

@@ -14,6 +14,7 @@ const MockTest = () => {
   const [userAnswers, setUserAnswers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const { loading, fetchData } = useFetch();
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ const MockTest = () => {
       selectedOption: ''
     })));
     setTestStarted(true);
+    setHasSubmitted(false);
     setCurrentQuestionIndex(0);
     
     // Request full screen for better experience
@@ -54,8 +56,9 @@ const MockTest = () => {
   };
 
   const submitTest = useCallback(async () => {
-    if (isSubmitting) return;
+    if (isSubmitting || hasSubmitted) return;
     setIsSubmitting(true);
+    setHasSubmitted(true);
     
     try {
       const resultData = {
@@ -76,8 +79,9 @@ const MockTest = () => {
     } catch (err) {
       console.error(err);
       setIsSubmitting(false);
+      // Keep hasSubmitted true so timer doesn't spam retries on unhandled network faults; user can click submit manually
     }
-  }, [activeTest, userAnswers, timeLeft, isSubmitting, fetchData, navigate]);
+  }, [activeTest, userAnswers, timeLeft, isSubmitting, hasSubmitted, fetchData, navigate]);
 
   // Timer logic
   useEffect(() => {
@@ -86,10 +90,10 @@ const MockTest = () => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
       return () => clearInterval(timer);
-    } else if (testStarted && timeLeft === 0) {
+    } else if (testStarted && timeLeft === 0 && !hasSubmitted) {
       submitTest();
     }
-  }, [testStarted, timeLeft, submitTest]);
+  }, [testStarted, timeLeft, hasSubmitted, submitTest]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);

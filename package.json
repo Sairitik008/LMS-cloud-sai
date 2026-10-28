@@ -8,6 +8,7 @@
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "cd server && npm test",
+    "clean:demo": "cd server && npm run clean:demo",
     "build": "cd server && npm install",
     "build:client": "cd client && npm run build",
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",

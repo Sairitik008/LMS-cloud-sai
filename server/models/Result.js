@@ -33,4 +33,9 @@ const resultSchema = new mongoose.Schema(
 resultSchema.index({ student: 1, createdAt: -1 });
 resultSchema.index({ mockTest: 1, score: -1 });
 
+// Native MongoDB TTL Index: Automatically evicts historical test submissions older than 30 days
+// Keeps M0 Atlas storage usage low and bounded without manual administrative maintenance
+const RESULT_TTL_SECONDS = parseInt(process.env.RESULT_TTL_SECONDS, 10) || 30 * 24 * 60 * 60; // 30 days
+resultSchema.index({ createdAt: 1 }, { expireAfterSeconds: RESULT_TTL_SECONDS });
+
 module.exports = mongoose.model('Result', resultSchema);

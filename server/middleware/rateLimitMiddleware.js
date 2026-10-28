@@ -1,4 +1,5 @@
 const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
+const jwt = require('jsonwebtoken');
 
 /**
  * Parse configurable rate limiting options from process.env with robust defaults
@@ -231,7 +232,22 @@ const userLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => {
-    return req.user?._id?.toString() || req.user?.id?.toString() || ipKeyGenerator(req);
+    if (req.user?._id || req.user?.id) {
+      return `user:${req.user._id || req.user.id}`;
+    }
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.decode(token);
+        if (decoded && decoded.id) {
+          return `user:${decoded.id}`;
+        }
+      } catch (e) {
+        // Fallback to IP if decoding fails
+      }
+    }
+    return ipKeyGenerator(req);
   },
   skip: () => process.env.NODE_ENV === 'test' && process.env.ENABLE_RATE_LIMIT_IN_TEST !== 'true',
   message: {

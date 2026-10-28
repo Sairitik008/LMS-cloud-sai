@@ -58,12 +58,21 @@ const createTutorial = asyncHandler(async (req, res) => {
     if (req.files.video) videoUrl = req.files.video[0].path;
   }
 
+  let parsedTags = tags;
+  if (typeof tags === 'string') {
+    try {
+      parsedTags = JSON.parse(tags);
+    } catch (e) {
+      parsedTags = tags.split(',').map((t) => t.trim()).filter(Boolean);
+    }
+  }
+
   const tutorial = new Tutorial({
     title,
     description,
     category,
     content,
-    tags: typeof tags === 'string' ? JSON.parse(tags) : tags,
+    tags: parsedTags,
     thumbnail,
     videoUrl,
     createdBy: req.user._id,
@@ -87,8 +96,16 @@ const updateTutorial = asyncHandler(async (req, res) => {
     tutorial.category = category || tutorial.category;
     tutorial.content = content || tutorial.content;
     
-    if (tags) {
-      tutorial.tags = typeof tags === 'string' ? JSON.parse(tags) : tags;
+    if (tags !== undefined) {
+      if (typeof tags === 'string') {
+        try {
+          tutorial.tags = JSON.parse(tags);
+        } catch (e) {
+          tutorial.tags = tags.split(',').map((t) => t.trim()).filter(Boolean);
+        }
+      } else {
+        tutorial.tags = tags;
+      }
     }
 
     // Handle Cloudinary Uploads

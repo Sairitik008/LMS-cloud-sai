@@ -124,3 +124,37 @@ node server/smoke-test.js
    - Server-side answer evaluation and score calculation (100% and 50% test cases).
    - Leaderboard aggregation pipeline with average score computation and student info population.
    - Announcements CRUD.
+
+---
+
+## 5. Cloud Cooling Period, Dormancy & Integration Hardening
+
+1. **MongoDB Atlas M0 Dormancy & NAT Timeout Prevention**:
+   - Mongoose `bufferTimeoutMS` raised to 30,000ms in [server/config/db.js](file:///e:/DEVELOPMENT/projects/lms/server/config/db.js) to absorb cloud cluster cold starts without premature buffering exceptions.
+   - Added `maxIdleTimeMS: 45000` to connection pool options so stale pool sockets are retired before cloud firewalls terminate them.
+   - Active MongoDB keep-alive ping interval set to 45 seconds in [server/server.js](file:///e:/DEVELOPMENT/projects/lms/server/server.js), with automated background reconnection if `readyState === 0`.
+
+2. **Render 15-Minute Free-Tier Cooling Period**:
+   - Scheduled self-ping pinging `/api/health` every 9 minutes, with automatic fallback to `https://lms-cloud-sai.onrender.com` in production.
+   - Frontend silent pre-warming via `warmupServer()` in [client/src/services/api.js](file:///e:/DEVELOPMENT/projects/lms/client/src/services/api.js) without triggering intrusive UI toasts on static landing pages.
+
+3. **Session Preservation on Cold Starts**:
+   - [client/src/context/AuthContext.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/context/AuthContext.jsx) modified to only purge user credentials upon explicit `401 Unauthorized` responses. Network timeouts and 5xx/503 responses retain cached user profiles, preventing spurious logouts during cold-start delays.
+
+4. **Resilient Data Fetching & Rate Limiting**:
+   - [client/src/pages/Dashboard.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/Dashboard.jsx) utilizes `Promise.allSettled` to prevent single endpoint recovery latencies from blanking the dashboard.
+   - [server/middleware/rateLimitMiddleware.js](file:///e:/DEVELOPMENT/projects/lms/server/middleware/rateLimitMiddleware.js) decodes Bearer JWT tokens in `userLimiter` key generation to ensure isolated rate limits for students sharing campus IP addresses.
+
+---
+
+## 6. MongoDB Atlas Free-Tier (M0) Storage Auto-Eviction & Budget Governance
+
+1. **Native TTL on Test Results**:
+   - [server/models/Result.js](file:///e:/DEVELOPMENT/projects/lms/server/models/Result.js) indexes `createdAt` with `expireAfterSeconds: 30 * 24 * 60 * 60` (30 days). MongoDB Atlas's background cleaner evicts old submissions with zero Node.js server overhead.
+2. **Per-Student Submission Cap (10 Max)**:
+   - [server/controllers/resultController.js](file:///e:/DEVELOPMENT/projects/lms/server/controllers/resultController.js) automatically prunes older results beyond the 10 most recent upon every submission, preventing test spam from filling the database.
+3. **Guest Student Account Auto-Expiry**:
+   - [server/models/User.js](file:///e:/DEVELOPMENT/projects/lms/server/models/User.js) defines a TTL index on `expiresAt`. Guest accounts expire after 30 days of inactivity, refreshed on active login in [server/controllers/authController.js](file:///e:/DEVELOPMENT/projects/lms/server/controllers/authController.js).
+   - Core showcase accounts (`admin@example.com` and `student@example.com`) have `isPermanent: true` and `expiresAt: null`, permanently exempting them from MongoDB TTL deletion.
+4. **On-Demand Pruning Script**:
+   - [server/prune-demo.js](file:///e:/DEVELOPMENT/projects/lms/server/prune-demo.js) (`npm run clean:demo`) provides a one-click manual storage sweep and health audit.

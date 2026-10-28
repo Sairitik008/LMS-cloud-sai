@@ -85,11 +85,15 @@ const errorHandler = (err, req, res, next) => {
     err.name === 'MongoTimeoutError' ||
     err.name === 'MongooseServerSelectionError' ||
     err.name === 'BSONError' ||
+    (err.name === 'MongooseError' && err.message && err.message.includes('buffering timed out')) ||
     (err.name && err.name.startsWith('Mongo'))
   ) {
     isHandled = true;
     statusCode = 503;
     message = 'Service temporarily unavailable. Please try again later.';
+    if (typeof res.setHeader === 'function') {
+      res.setHeader('Retry-After', '5');
+    }
   }
 
   // 5. Handle Express Body-Parser Syntax Errors (e.g. malformed JSON in request payload)

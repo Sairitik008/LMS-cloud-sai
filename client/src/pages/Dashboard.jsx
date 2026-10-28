@@ -32,7 +32,8 @@ const Dashboard = () => {
 
   const getDashboardData = useCallback(async () => {
     try {
-      const [coursesData, tutorialsData, materialsData, resultsData, testsData] = await Promise.all([
+      // Use allSettled so one slow or recovering endpoint never blanks the whole dashboard
+      const [coursesRes, tutorialsRes, materialsRes, resultsRes, testsRes] = await Promise.allSettled([
         fetchData('/courses'),
         fetchData('/tutorials'),
         fetchData('/materials'),
@@ -40,8 +41,14 @@ const Dashboard = () => {
         fetchData('/mocktests')
       ]);
 
-      const avgScore = resultsData && resultsData.length > 0 
-        ? Math.round(resultsData.reduce((acc, r) => acc + r.score, 0) / resultsData.length)
+      const coursesData = coursesRes.status === 'fulfilled' ? coursesRes.value : null;
+      const tutorialsData = tutorialsRes.status === 'fulfilled' ? tutorialsRes.value : null;
+      const materialsData = materialsRes.status === 'fulfilled' ? materialsRes.value : null;
+      const resultsData = resultsRes.status === 'fulfilled' && Array.isArray(resultsRes.value) ? resultsRes.value : [];
+      const testsData = testsRes.status === 'fulfilled' ? testsRes.value : null;
+
+      const avgScore = resultsData.length > 0 
+        ? Math.round(resultsData.reduce((acc, r) => acc + (r.score || 0), 0) / resultsData.length)
         : 0;
 
       setStats({
@@ -52,8 +59,8 @@ const Dashboard = () => {
         scoreRaw: avgScore
       });
 
-      setRecentResults((resultsData || []).slice(0, 3));
-      setUpcomingTests((testsData?.tests || []).slice(0, 3));
+      setRecentResults(resultsData.slice(0, 3));
+      setUpcomingTests(Array.isArray(testsData?.tests) ? testsData.tests.slice(0, 3) : []);
 
     } catch (err) {
       console.error('Error fetching dashboard data', err);

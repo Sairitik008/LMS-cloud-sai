@@ -22,22 +22,26 @@ const seedFinalTestAccounts = async () => {
       }
     }
 
-    // Clean and Create Admin
+    // Clean and Create Admin (Permanently protected from TTL eviction)
     await User.findOneAndDelete({ email: adminEmail });
     await User.create({
       name: process.env.ADMIN_SEED_NAME || 'Prof. Ramesh Verma (Placement Officer)',
       email: adminEmail,
       password: adminPassword,
-      role: 'admin'
+      role: 'admin',
+      isPermanent: true,
+      expiresAt: null
     });
 
-    // Clean and Create Student
+    // Clean and Create Student (Permanently protected from TTL eviction)
     await User.findOneAndDelete({ email: studentEmail });
     await User.create({
       name: process.env.STUDENT_SEED_NAME || 'Rahul Sharma',
       email: studentEmail,
       password: studentPassword,
       role: 'student',
+      isPermanent: true,
+      expiresAt: null,
       education: 'B.Tech Computer Science (3rd Year, NIT/State Univ)',
       skills: ['Java', 'Data Structures & Algorithms', 'Spring Boot', 'React', 'SQL'],
       hobbies: ['Competitive Programming', 'Hackathons', 'Cricket'],

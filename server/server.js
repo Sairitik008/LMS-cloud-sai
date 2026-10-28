@@ -65,8 +65,11 @@ app.use(cors({
       return callback(null, true);
     }
 
-    // Allow scoped project Vercel preview deployments (protects against arbitrary third-party .vercel.app domains)
-    if (/^https:\/\/(lms-cloud-sai|lms-frontend)(-[a-z0-9]+)?-sairitik008s-projects\.vercel\.app$/.test(cleanOrigin)) {
+    // Allow scoped project Vercel deployments & branch previews (e.g. lms-cloud-sai-git-main-sairitik008s-projects.vercel.app)
+    if (
+      /^https:\/\/(lms-cloud-sai|lms-frontend)(-[a-z0-9-]+)?-sairitik008s-projects\.vercel\.app$/i.test(cleanOrigin) ||
+      /^https:\/\/lms-cloud-sai(-[a-z0-9-]+)?\.vercel\.app$/i.test(cleanOrigin)
+    ) {
       return callback(null, true);
     }
 
@@ -100,6 +103,8 @@ app.get('/api/health', async (req, res) => {
       await mongoose.connection.db.command({ ping: 1 });
       dbLatency = `${Date.now() - start}ms`;
       dbStatus = 'connected';
+    } else if (mongoose.connection.readyState === 2) {
+      dbStatus = 'connecting';
     }
   } catch (err) {
     console.error('Health check database ping failed:', err);
@@ -115,12 +120,16 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
-// Periodic keep-alive ping to MongoDB Atlas (prevents cluster dormancy & idle connection drops)
-const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // Every 10 minutes
+// Periodic keep-alive ping to MongoDB Atlas (prevents cluster dormancy & idle connection drops by NAT firewalls)
+// Reduced to 45 seconds to keep cloud firewall sockets warm and prevent dropped TCP connections
+const KEEP_ALIVE_INTERVAL = 45 * 1000;
 setInterval(async () => {
   try {
     if (mongoose.connection.readyState === 1 && mongoose.connection.db) {
       await mongoose.connection.db.command({ ping: 1 });
+    } else if (mongoose.connection.readyState === 0) {
+      console.warn('⚠️ MongoDB connection is inactive in keep-alive check. Initiating reconnection...');
+      connectDB().catch((err) => console.warn('Keep-alive reconnect attempt warning:', err.message));
     }
   } catch (err) {
     console.warn('⚠️ MongoDB keep-alive ping warning:', err.message);
@@ -128,10 +137,11 @@ setInterval(async () => {
 }, KEEP_ALIVE_INTERVAL);
 
 // Automated Cloud Keep-Alive: Self-pings public Render web URL to reset 15-min idle spin-down counter
-const publicUrl = process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_BACKEND_URL;
+// Falls back to production URL 'https://lms-cloud-sai.onrender.com' if not explicitly defined
+const publicUrl = process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_BACKEND_URL || (process.env.NODE_ENV === 'production' ? 'https://lms-cloud-sai.onrender.com' : null);
 if (publicUrl && process.env.NODE_ENV !== 'test') {
   const cleanPublicUrl = publicUrl.replace(/\/+$/, '');
-  const SELF_PING_INTERVAL = 11 * 60 * 1000; // Every 11 minutes (Render cooling-period threshold is 15 mins)
+  const SELF_PING_INTERVAL = 9 * 60 * 1000; // Every 9 minutes (Render cooling-period threshold is 15 mins)
   setInterval(async () => {
     try {
       const pingRes = await fetch(`${cleanPublicUrl}/api/health`);

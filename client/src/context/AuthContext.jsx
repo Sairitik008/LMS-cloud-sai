@@ -15,10 +15,18 @@ export const AuthProvider = ({ children }) => {
       if (user) {
         try {
           const { data } = await api.get('/auth/me');
-          setUser({ ...data, token: user.token });
-        } catch {
-          localStorage.removeItem('userInfo');
-          setUser(null);
+          const updatedUser = { ...data, token: user.token };
+          setUser(updatedUser);
+          localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+        } catch (err) {
+          // Only clear session if token is explicitly rejected (401 Unauthorized)
+          // During server cold-starts, network timeouts, or 503 database reconnects, preserve local session
+          if (err.response?.status === 401) {
+            localStorage.removeItem('userInfo');
+            setUser(null);
+          } else {
+            console.warn('Backend server cold-start or temporary network hiccup; retaining cached session.');
+          }
         }
       }
       setLoading(false);
