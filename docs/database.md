@@ -1,6 +1,6 @@
 # LMS Cloud Sai — Database Schema & Data Models
 
-LMS Cloud Sai uses **MongoDB Atlas** with **Mongoose ODM** (`v9.4.1`) for document persistence, relational population, schema validation, and aggregation pipelines.
+LMS Cloud Sai uses **MongoDB Atlas** with **Mongoose ODM** (`v9.4.1`) for document persistence, relational population, schema validation, aggregation pipelines, and automated storage budget preservation.
 
 ---
 
@@ -91,7 +91,7 @@ erDiagram
         number correctAnswers
         number timeTaken
         array answers
-        date createdAt
+        date createdAt "TTL: 30 days"
         date updatedAt
     }
 
@@ -99,163 +99,136 @@ erDiagram
         ObjectId _id PK
         string title
         string message
+        string type
         ObjectId createdBy FK
-        date createdAt
+        date createdAt "TTL: 14 days"
         date updatedAt
     }
 ```
 
 ---
 
-## 2. Collection Schemas in Detail
+## 2. Collection Specifications & Data Models
 
-### 2.1 Users Collection ([models/User.js](file:///e:/DEVELOPMENT/projects/lms/server/models/User.js))
+### 2.1 User Model (`users`)
+* **Primary Key:** `_id` (ObjectId)
+* **Indexes:**
+  * `email` (Unique, Sparse)
+* **Fields:**
+  * `name` (String, Required, Trimmed)
+  * `email` (String, Required, Lowercase, Validated via RFC 5322 regex)
+  * `password` (String, Required, Bcrypt hashed, Select: false by default)
+  * `role` (String, Enum: `['admin', 'student']`, Default: `'student'`)
+  * `avatar` (String, Cloudinary CDN URL)
+  * `bio` (String, Max 500 characters)
+  * `educationalBackground` (String)
+  * `skills` ([String])
+  * `hobbies` ([String])
+  * `socialLinks` (Object: `{ github: String, hackerrank: String, linkedin: String }`)
+  * `timestamps` (`createdAt`, `updatedAt`)
 
-Stores authentication credentials, user role, and developer identity data.
+### 2.2 Course Model (`courses`)
+* **Primary Key:** `_id` (ObjectId)
+* **Fields:**
+  * `title` (String, Required, Trimmed)
+  * `description` (String, Required)
+  * `category` (String, Required, e.g., 'DSA', 'Full Stack', 'Cloud')
+  * `thumbnail` (String, Cloudinary image URL)
+  * `modules` (Array of embedded subdocuments: `[{ title: String, content: String }]`)
+  * `createdBy` (ObjectId referencing `User`)
 
-| Field | Type | Required | Default | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `name` | String | Yes | — | Student/Admin full name |
-| `email` | String | Yes | — | Normalized, lowercase, trimmed, unique index |
-| `password` | String | Yes | — | Min length 6; auto-hashed via bcrypt pre-save hook |
-| `role` | String | No | `'student'` | Enum: `['admin', 'student']` |
-| `avatar` | String | No | DiceBear SVG | Cloudinary image URL or default SVG avatar |
-| `bio` | String | No | `''` | Short biography/about me |
-| `educationalBackground` | String | No | `''` | School, university, or institute |
-| `skills` | `[String]` | No | `[]` | Technical tags (e.g., `["React", "Node.js"]`) |
-| `hobbies` | `[String]` | No | `[]` | Personal interests |
-| `socialLinks.github` | String | No | `''` | GitHub profile URL |
-| `socialLinks.hackerrank` | String | No | `''` | HackerRank profile URL |
-| `socialLinks.linkedin` | String | No | `''` | LinkedIn profile URL |
+### 2.3 Tutorial Model (`tutorials`)
+* **Primary Key:** `_id` (ObjectId)
+* **Fields:**
+  * `title` (String, Required)
+  * `description` (String, Required)
+  * `category` (String, Required)
+  * `content` (String, Markdown/HTML tutorial text)
+  * `tags` ([String])
+  * `thumbnail` (String, Cloudinary image URL)
+  * `videoUrl` (String, Cloudinary video URL)
+  * `createdBy` (ObjectId referencing `User`)
 
-#### Pre-Save Middleware Hook:
-```javascript
-userSchema.pre('save', async function () {
-  if (!this.isModified('password')) return;
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
-```
+### 2.4 Study Material Model (`studymaterials`)
+* **Primary Key:** `_id` (ObjectId)
+* **Fields:**
+  * `title` (String, Required)
+  * `description` (String)
+  * `category` (String, Required)
+  * `fileUrl` (String, Cloudinary PDF or external link)
+  * `type` (String, Enum: `['pdf', 'link', 'notes']`, Required)
+  * `createdBy` (ObjectId referencing `User`)
 
----
+### 2.5 Mock Test Model (`mocktests`)
+* **Primary Key:** `_id` (ObjectId)
+* **Fields:**
+  * `title` (String, Required)
+  * `description` (String)
+  * `category` (String, Required)
+  * `duration` (Number, Duration in minutes)
+  * `questions` (Array of question subdocuments: `[{ questionText: String, options: [String], correctAnswer: String, explanation: String }]`)
+  * `createdBy` (ObjectId referencing `User`)
 
-### 2.2 Courses Collection ([models/Course.js](file:///e:/DEVELOPMENT/projects/lms/server/models/Course.js))
+### 2.6 Result Model (`results`) — With TTL Auto-Eviction
+* **Primary Key:** `_id` (ObjectId)
+* **Indexes:**
+  * `{ student: 1, createdAt: -1 }` (Compound index for student performance histories)
+  * `{ createdAt: 1 }` with `{ expireAfterSeconds: 2592000 }` (**30-day TTL index**)
+* **Fields:**
+  * `student` (ObjectId referencing `User`, Required)
+  * `mockTest` (ObjectId referencing `MockTest`, Required)
+  * `score` (Number, 0–100 percentage)
+  * `totalQuestions` (Number)
+  * `correctAnswers` (Number)
+  * `timeTaken` (Number, Elapsed seconds)
+  * `answers` (`[{ questionIndex: Number, selectedOption: String, isCorrect: Boolean }]`)
 
-Stores structured course tracks with embedded module subdocuments.
-
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `title` | String | Yes | Course title |
-| `description` | String | Yes | Long-form course syllabus summary |
-| `category` | String | Yes | Topic category (indexed for fast filtering) |
-| `thumbnail` | String | No | Cloudinary secure URL for course graphic |
-| `modules` | `[Subdocument]` | No | Embedded array of module objects |
-| `modules[].title` | String | Yes | Module lesson title |
-| `modules[].content`| String | Yes | Module body text or Markdown |
-| `modules[].order` | Number | No (0) | Sequential index for curriculum order |
-| `createdBy` | ObjectId | No | References `User` (`role: 'admin'`) |
-
----
-
-### 2.3 Tutorials Collection ([models/Tutorial.js](file:///e:/DEVELOPMENT/projects/lms/server/models/Tutorial.js))
-
-Stores standalone video tutorials and companion technical guides.
-
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `title` | String | Yes | Tutorial title |
-| `description` | String | Yes | Brief summary of covered technical concepts |
-| `category` | String | Yes | Category tag (indexed) |
-| `content` | String | Yes | Technical walkthrough or code snippets |
-| `tags` | `[String]` | No | Keyword search tags |
-| `thumbnail` | String | No | Cloudinary thumbnail preview image |
-| `videoUrl` | String | No | Cloudinary MP4/WebM video stream URL |
-| `createdBy` | ObjectId | No | References `User` |
-
----
-
-### 2.4 Study Materials Collection ([models/StudyMaterial.js](file:///e:/DEVELOPMENT/projects/lms/server/models/StudyMaterial.js))
-
-Stores downloadable documentation, cheat sheets, and external reference links.
-
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `title` | String | Yes | Material name |
-| `description` | String | Yes | Resource description |
-| `category` | String | Yes | Subject category (indexed) |
-| `fileUrl` | String | Yes | Hosted PDF link, drive URL, or web link |
-| `type` | String | No (`'pdf'`) | Enum: `['pdf', 'link', 'notes']` |
-| `createdBy` | ObjectId | No | References `User` |
-
----
-
-### 2.5 Mock Tests Collection ([models/MockTest.js](file:///e:/DEVELOPMENT/projects/lms/server/models/MockTest.js))
-
-Defines assessments, time constraints, and question pools with answer keys.
-
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `title` | String | Yes | Test title |
-| `description` | String | Yes | Test scope description |
-| `category` | String | Yes | Assessment topic (indexed) |
-| `duration` | Number | Yes | Time limit in minutes |
-| `questions` | `[Subdocument]` | Yes | Array of question objects |
-| `questions[].questionText` | String | Yes | Assessment prompt |
-| `questions[].options` | `[String]` | Yes | 4 multiple choice options |
-| `questions[].correctAnswer` | String | Yes | Exact text of the correct choice |
-| `questions[].explanation` | String | No | Rationale shown during review |
-| `createdBy` | ObjectId | No | References `User` |
+### 2.7 Announcement Model (`announcements`) — With TTL Auto-Eviction
+* **Primary Key:** `_id` (ObjectId)
+* **Indexes:**
+  * `{ createdAt: 1 }` with `{ expireAfterSeconds: 1209600 }` (**14-day TTL index**)
+* **Fields:**
+  * `title` (String, Required)
+  * `message` (String, Required)
+  * `type` (String, Enum: `['info', 'warning', 'success', 'urgent']`, Default: `'info'`)
+  * `createdBy` (ObjectId referencing `User`)
 
 ---
 
-### 2.6 Results Collection ([models/Result.js](file:///e:/DEVELOPMENT/projects/lms/server/models/Result.js))
+## 3. Storage Optimization & Free-Tier Longevity Architecture
 
-Records student assessment submissions, calculated performance scores, and response integrity.
+Because the demonstration environment operates on MongoDB Atlas M0 (512MB hard storage quota), automated retention policies prevent quota exhaustion without requiring periodic manual database maintenance:
 
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `student` | ObjectId | Yes | References `User` (indexed) |
-| `mockTest` | ObjectId | Yes | References `MockTest` (indexed) |
-| `score` | Number | Yes | Calculated percentage ($0 - 100$) |
-| `totalQuestions` | Number | Yes | Question count of the test |
-| `correctAnswers` | Number | Yes | Number of correct selections |
-| `timeTaken` | Number | No | Total elapsed test time in seconds |
-| `answers` | `[Subdocument]` | No | Array of evaluated answers |
-| `answers[].questionIndex` | Number | No | 0-based question pointer |
-| `answers[].selectedOption` | String | No | Option chosen by candidate |
-| `answers[].isCorrect` | Boolean | No | Verification result computed server-side |
+### 3.1 MongoDB Atlas Native TTL Eviction
+* High-volume transient collections (`results` and `announcements`) utilize MongoDB's native background TTL index threads (running every 60 seconds).
+* Documents past their lifespan are automatically dropped from disk and memory, maintaining constant bounded storage footprints.
 
----
+### 3.2 Automated Storage Guarding (`dbStorageGuard.js`)
+* The utility script [server/utils/dbStorageGuard.js](file:///e:/DEVELOPMENT/projects/lms/server/utils/dbStorageGuard.js) calculates live storage consumption via the MongoDB `dbStats` command:
+  * Measures data size, index size, and total storage allocation.
+  * Alerts if storage utilization exceeds 75% of the 512MB free tier budget.
 
-### 2.7 Announcements Collection ([models/Announcement.js](file:///e:/DEVELOPMENT/projects/lms/server/models/Announcement.js))
-
-Stores system-wide announcements broadcasted to all students.
-
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `title` | String | Yes | Announcement headline |
-| `message` | String | Yes | Detailed body text |
-| `createdBy` | ObjectId | No | References `User` (Admin) |
-
----
-
-## 3. Indexing & Optimization Strategy
-
-To maintain sub-100ms response times as user records and test submissions scale, explicit indexes are declared across critical lookup paths:
-
-1. **`User.email`**: `{ unique: true, index: true }` — Guarantees credential uniqueness and powers $O(1)$ login lookups.
-2. **`Course.category`**, **`Tutorial.category`**, **`StudyMaterial.category`**, **`MockTest.category`**: `{ index: true }` — Enables instant category-filtered catalog browsing.
-3. **`Result.student` & `Result.mockTest`**: `{ index: true }` — Optimizes student result history queries and leaderboard aggregation pipeline runs.
+### 3.3 Anti-Dormancy & Socket Keep-Alive Ping
+* Cloud firewall NAT routers (AWS/GCP edge gateways) silently drop idle TCP connections after 60–120 seconds of inactivity.
+* [server/server.js](file:///e:/DEVELOPMENT/projects/lms/server/server.js) runs an active database ping every 45 seconds:
+  ```javascript
+  setInterval(async () => {
+    if (mongoose.connection.readyState === 1 && mongoose.connection.db) {
+      await mongoose.connection.db.command({ ping: 1 });
+    }
+  }, 45 * 1000);
+  ```
+  This keeps socket buffers hot, prevents stale connection errors, and guarantees instantaneous query responses for student sessions.
 
 ---
 
 ## 4. Leaderboard Aggregation Deep Dive
 
-The global leaderboard is computed in real time without storing denormalized leaderboard tables, using MongoDB's aggregation engine in [resultController.js](file:///e:/DEVELOPMENT/projects/lms/server/controllers/resultController.js):
+The global student leaderboard is computed on-demand via MongoDB's aggregation pipeline in [resultController.js](file:///e:/DEVELOPMENT/projects/lms/server/controllers/resultController.js):
 
 ```javascript
 const leaderboard = await Result.aggregate([
-  // 1. Group all test attempts by student ObjectId
+  // 1. Group mock test attempts by student ObjectId
   {
     $group: {
       _id: '$student',

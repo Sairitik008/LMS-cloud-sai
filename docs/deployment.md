@@ -1,6 +1,6 @@
 # LMS Cloud Sai — Cloud Deployment & DevOps Guide
 
-This guide provides end-to-end instructions for deploying the **LMS Cloud Sai** platform across production cloud services: **Render** (Backend API), **Vercel** (Frontend SPA), **MongoDB Atlas** (Database), and **Cloudinary** (Media CDN).
+This guide provides end-to-end instructions for deploying and maintaining the **LMS Cloud Sai** platform across production cloud services: **Render** (Backend API), **Vercel** (Frontend SPA), **MongoDB Atlas** (Database), and **Cloudinary** (Media CDN).
 
 ---
 
@@ -9,147 +9,120 @@ This guide provides end-to-end instructions for deploying the **LMS Cloud Sai** 
 ```mermaid
 graph LR
     User([End User Browser])
-    Vercel["Frontend on Vercel<br/>(Edge Global CDN)"]
-    Render["Backend API on Render<br/>(Node.js / Express Web Service)"]
-    Atlas[("MongoDB Atlas<br/>(Multi-Region NoSQL)")]
+    Vercel["Frontend on Vercel<br/>(Edge Global CDN)<br/><code>lms-cloud-sai.vercel.app</code>"]
+    Render["Backend API on Render<br/>(Node.js / Express Web Service)<br/><code>lms-cloud-sai.onrender.com</code>"]
+    Atlas[("MongoDB Atlas M0<br/>(Multi-Region NoSQL)")]
     Cloudinary["Cloudinary CDN<br/>(Image & Video Storage)"]
 
     User -- "HTTPS (Single Page App)" --> Vercel
     User -- "API Requests / Bearer Auth" --> Render
-    Render -- "Mongoose Driver / TCP" --> Atlas
+    Render -- "Mongoose Driver / TCP Keep-Alive (45s)" --> Atlas
     Render -- "Multipart File Uploads" --> Cloudinary
     Vercel -- "Displays Assets" --> Cloudinary
 ```
 
 ---
 
-## 2. Prerequisites & Accounts
+## 2. Live Production Deployments
 
-1. **GitHub Account**: Containing the `LMS-cloud-sai` repository.
-2. **MongoDB Atlas Account**: A dedicated or free M0 cluster.
-3. **Cloudinary Account**: Cloud name, API key, and API secret.
-4. **Render Account**: For hosting the Node.js Express server.
-5. **Vercel Account**: For hosting the Vite React client.
-
----
-
-## 3. Database Setup (MongoDB Atlas)
-
-1. **Create Database Cluster**:
-   - Create a shared M0 cluster on AWS/GCP in your nearest region.
-2. **Configure Database User**:
-   - Create a database user with `readWriteAnyDatabase` or scoped read/write permissions on `lms`.
-   - Record the username and a strong alphanumeric password.
-3. **Configure Network Access**:
-   - In Atlas under **Network Access**, add IP address `0.0.0.0/0` (Allow Access from Anywhere) to permit Render's dynamic IP ranges to connect.
-4. **Obtain Connection String**:
-   - Connection format:
-     ```
-     mongodb+srv://<username>:<password>@cluster0.mongodb.net/lms?retryWrites=true&w=majority
-     ```
+| Component | Provider | Live URL | Health Status |
+| :--- | :--- | :--- | :--- |
+| **Frontend Application** | Vercel Edge CDN | [https://lms-cloud-sai.vercel.app](https://lms-cloud-sai.vercel.app) | `200 OK` |
+| **Backend REST API** | Render Web Service | [https://lms-cloud-sai.onrender.com](https://lms-cloud-sai.onrender.com) | `200 OK` |
+| **API Healthcheck** | Render Endpoint | [https://lms-cloud-sai.onrender.com/api/health](https://lms-cloud-sai.onrender.com/api/health) | `database: connected` |
+| **Database Cluster** | MongoDB Atlas M0 | Multi-tenant AWS/GCP | Active (`233ms latency`) |
+| **Media Delivery** | Cloudinary CDN | Asset distribution endpoints | Operational |
 
 ---
 
-## 4. Backend Deployment (Render)
+## 3. Continuous Integration Pipeline (GitHub Actions)
 
-1. **Create a New Web Service**:
-   - Connect your GitHub repository to Render.
-   - Choose **Web Service**.
-2. **Service Configuration**:
-   - **Name**: `lms-cloud-sai` (or custom name)
-   - **Region**: Choose closest to your MongoDB Atlas region (e.g., Frankfurt, Singapore, Ohio)
-   - **Root Directory**: `server`
-   - **Runtime**: `Node`
-   - **Build Command**: `npm install`
-   - **Start Command**: `node server.js`
-   - **Instance Type**: Free or Starter
-3. **Environment Variables**:
-   Under the **Environment** tab, add the following key-value pairs:
+The repository includes a strict GitHub Actions CI workflow in [.github/workflows/ci.yml](file:///e:/DEVELOPMENT/projects/lms/.github/workflows/ci.yml) that gates every push and pull request to `main`:
 
-   | Key | Value Example | Description |
-   | :--- | :--- | :--- |
-   | `PORT` | `5000` | Internal server listen port |
-   | `NODE_ENV` | `production` | Enables production optimizations |
-   | `MONGO_URI` | `mongodb+srv://...` | MongoDB Atlas URI |
-   | `JWT_SECRET` | `YOUR_RANDOM_LONG_SECRET_KEY` | Secret for HMAC SHA-256 JWT signing |
-   | `JWT_EXPIRE` | `7d` | Token lifetime |
-   | `CLOUDINARY_CLOUD_NAME`| `your_cloud_name` | Cloudinary credentials |
-   | `CLOUDINARY_API_KEY` | `your_api_key` | Cloudinary API Key |
-   | `CLOUDINARY_API_SECRET`| `your_api_secret` | Cloudinary API Secret |
-   | `FRONTEND_URL` | `https://your-app.vercel.app` | Production frontend domain for CORS |
+```yaml
+name: LMS Production CI Pipeline
+on: [push, pull_request]
 
-4. **Health Check Path**:
-   - Set **Health Check Path** to `/api/health`.
-5. **Deploy**:
-   - Click **Create Web Service**. Once deployed, Render will provide a live URL such as `https://lms-cloud-sai.onrender.com`.
+jobs:
+  lint-and-build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: 'npm', cache-dependency-path: client/package-lock.json }
+      - run: npm ci
+        working-directory: client
+      - run: npm run lint
+        working-directory: client
+      - run: npm run build
+        working-directory: client
 
----
-
-## 5. Frontend Deployment (Vercel)
-
-1. **Import Repository**:
-   - Go to the Vercel dashboard and click **Add New... > Project**.
-   - Select your `LMS-cloud-sai` repository.
-2. **Project Settings**:
-   - **Framework Preset**: `Vite`
-   - **Root Directory**: `client`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-   - **Install Command**: `npm install`
-3. **Environment Variables**:
-   Add the backend endpoint pointer:
-
-   | Key | Value Example | Description |
-   | :--- | :--- | :--- |
-   | `VITE_API_URL` | `https://lms-cloud-sai.onrender.com/api` | Live Render backend API root |
-
-4. **Verify SPA Rewrites**:
-   Confirm that [client/vercel.json](file:///e:/DEVELOPMENT/projects/lms/client/vercel.json) exists in the client folder:
-   ```json
-   {
-     "rewrites": [
-       { "source": "/(.*)", "destination": "/index.html" }
-     ]
-   }
-   ```
-5. **Deploy**:
-   - Click **Deploy**. Vercel will build the frontend assets and distribute them across edge locations.
+  test-backend:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports: [27017:27017]
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: 'npm', cache-dependency-path: server/package-lock.json }
+      - run: npm ci --legacy-peer-deps
+        working-directory: server
+      - run: npm test
+        working-directory: server
+        env:
+          NODE_ENV: test
+          PORT: 5001
+          JWT_SECRET: ci_secret_key_super_secure_12345
+          MONGO_URI: mongodb://127.0.0.1:27017/lms_ci
+```
 
 ---
 
-## 6. Post-Deployment Verification
+## 4. Free-Tier Cooling Period & Anti-Dormancy Strategy
 
-1. **Verify Backend Health**:
-   ```bash
-   curl https://lms-cloud-sai.onrender.com/api/health
-   # Expected output: {"status":"ok","uptime":...}
-   ```
-2. **Seed Initial Accounts**:
-   From your local development machine with production `.env` credentials configured:
-   ```bash
-   node server/seed-final.js
-   ```
-   This creates:
-   - `admin@example.com` / `password123`
-   - `student@example.com` / `password123`
-3. **Run End-to-End Smoke Test Against Production**:
-   Update `API_URL` in `server/smoke-test.js` or run locally to verify complete operational integrity.
+### 4.1 Render 15-Minute Free Tier Spin-Down Protection
+* **Problem:** Render free instances enter cold sleep after 15 minutes of zero inbound traffic, causing initial visitor latency spikes of 30–50 seconds.
+* **Solution:** [server/server.js](file:///e:/DEVELOPMENT/projects/lms/server/server.js) runs an internal keep-alive loop:
+  * Every **9 minutes**, the server performs an unthrottled HTTP fetch against `${PUBLIC_URL}/api/health`.
+  * This resets the Render inactivity timer without placing load on the application endpoints.
+
+### 4.2 MongoDB Atlas Free Tier NAT Drop Protection
+* **Problem:** AWS/GCP network firewalls sever idle TCP connections after 60–120 seconds of inactivity, resulting in `MongoServerSelectionError` or `connection reset by peer`.
+* **Solution:** A background interval pings the active MongoDB cluster connection every **45 seconds** via `db.command({ ping: 1 })`.
 
 ---
 
-## 7. Troubleshooting & Operational Notes
+## 5. Deployment Step-by-Step Instructions
 
-### Render Free Tier Cold Starts
-- **Symptom:** The first API request after 15 minutes of inactivity takes 30-50 seconds to respond.
-- **Cause:** Free-tier Render web services spin down after idling.
-- **Remedy:** This is expected behavior on free tiers. For zero-downtime production, upgrade to a Render paid instance ($7/month) or configure an external uptime monitor (e.g., UptimeRobot or Cron-job.org) pinging `https://lms-cloud-sai.onrender.com/api/health` every 10 minutes.
+### Backend (Render Web Service)
+1. In Render, select **New > Web Service** and link the GitHub repository.
+2. Settings:
+   * **Root Directory**: `server`
+   * **Build Command**: `npm install --legacy-peer-deps`
+   * **Start Command**: `node server.js`
+   * **Health Check Path**: `/api/health`
+3. Add Environment Variables:
+   * `PORT`: `5000`
+   * `NODE_ENV`: `production`
+   * `MONGO_URI`: `mongodb+srv://...`
+   * `JWT_SECRET`: High-entropy 64-char key
+   * `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+   * `FRONTEND_URL`: `https://lms-cloud-sai.vercel.app`
+   * `PUBLIC_BACKEND_URL`: `https://lms-cloud-sai.onrender.com`
 
-### CORS Errors (`Not allowed by CORS`)
-- **Symptom:** Browser console reports `Access to XMLHttpRequest has been blocked by CORS policy`.
-- **Cause:** Request originates from a domain not matched by [server/server.js](file:///e:/DEVELOPMENT/projects/lms/server/server.js#L22-L41).
-- **Remedy:** Ensure your custom domain is added to `allowedOrigins` in `server.js` or set via the `FRONTEND_URL` environment variable. Note that all `*.vercel.app` subdomains are automatically allowed by default.
-
-### Page Refresh Returns 404 on Vercel
-- **Symptom:** Direct URL navigation to `/courses` or `/dashboard` displays Vercel 404 page.
-- **Cause:** Missing SPA rewrite rule.
-- **Remedy:** Ensure `client/vercel.json` exists with the rewrite rule pointing all paths to `/index.html`.
+### Frontend (Vercel SPA)
+1. In Vercel, select **Add New > Project** and import the GitHub repository.
+2. Settings:
+   * **Root Directory**: `client`
+   * **Framework Preset**: `Vite`
+   * **Build Command**: `npm run build`
+   * **Output Directory**: `dist`
+3. Environment Variables:
+   * `VITE_API_URL`: `https://lms-cloud-sai.onrender.com/api`

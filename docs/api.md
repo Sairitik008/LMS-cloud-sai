@@ -12,13 +12,16 @@ Authorization: Bearer <JWT_TOKEN>
 
 ### 1.1 Health Check
 - **Route:** `GET /api/health`
-- **Access:** Public
-- **Description:** Verifies backend responsiveness and server uptime.
+- **Access:** Public (Unthrottled by rate limiter)
+- **Description:** Verifies backend responsiveness, server uptime, and performs live ping to MongoDB Atlas cluster.
 - **Response (200 OK):**
   ```json
   {
     "status": "ok",
-    "uptime": 1248.52
+    "uptime": 1983.10,
+    "database": "connected",
+    "dbLatency": "233ms",
+    "timestamp": "2026-10-28T19:49:39.128Z"
   }
   ```
 
@@ -101,6 +104,37 @@ Authorization: Bearer <JWT_TOKEN>
 - **Content-Type:** `multipart/form-data` (or `application/json` if no avatar file)
 - **Form Fields:** `name`, `email`, `password` (optional), `bio`, `educationalBackground`, `skills`, `hobbies`, `socialLinks`, `avatar` (file).
 - **Response (200 OK):** Updated user profile payload with refreshed token.
+
+### 2.5 Get All Registered Students (Admin Only)
+- **Route:** `GET /api/auth/students`
+- **Access:** Private (`protect`, `admin`)
+- **Headers:** `Authorization: Bearer <token>`
+- **Description:** Retrieves list of all registered student accounts with their profile metadata for the admin moderation dashboard.
+- **Response (200 OK):**
+  ```json
+  [
+    {
+      "_id": "662a5b6c...",
+      "name": "Rahul Sharma",
+      "email": "student@example.com",
+      "role": "student",
+      "avatar": "https://res.cloudinary.com/...",
+      "createdAt": "2026-10-28T18:00:00.000Z"
+    }
+  ]
+  ```
+
+### 2.6 Delete Student Account (Admin Only)
+- **Route:** `DELETE /api/auth/students/:id`
+- **Access:** Private (`protect`, `admin`)
+- **Headers:** `Authorization: Bearer <token>`
+- **Description:** Permanently deletes a student account by ObjectId.
+- **Response (200 OK):**
+  ```json
+  {
+    "message": "Student account removed successfully"
+  }
+  ```
 
 ---
 
