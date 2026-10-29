@@ -94,15 +94,11 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen py-12 flex items-center justify-center bg-[#070A11] px-4 relative overflow-hidden">
-      {/* Background Ambience */}
-      <div className="fixed inset-0 bg-grid-tech opacity-40 pointer-events-none"></div>
-      <div className="fixed top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-sky-500/10 rounded-full blur-[140px] pointer-events-none"></div>
-
+    <div className="min-h-screen py-12 flex items-center justify-center bg-[#0B0F19] px-4 relative">
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card w-full max-w-lg p-6 sm:p-8 rounded-2xl border-white/[0.08] relative z-10 shadow-2xl bg-[#090E1A]/90"
+        className="w-full max-w-lg p-6 sm:p-8 rounded-xl border border-slate-800 bg-[#0F172A] relative z-10 shadow-lg"
       >
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center mb-6">

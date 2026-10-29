@@ -11,11 +11,7 @@ const Layout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#070A11] text-textPrimary relative selection:bg-sky-500/20 selection:text-white">
-      {/* Ambient Canvas Lighting */}
-      <div className="fixed inset-0 bg-grid-tech opacity-30 pointer-events-none z-0"></div>
-      <div className="fixed top-0 right-1/4 w-[600px] h-[300px] bg-gradient-to-b from-sky-500/5 to-transparent blur-[120px] pointer-events-none z-0"></div>
-
+    <div className="min-h-screen bg-[#0B0F19] text-textPrimary relative selection:bg-blue-600/20 selection:text-white">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       
       <div 
