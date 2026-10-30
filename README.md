@@ -23,6 +23,11 @@
 
 ## 🚀 Key Highlights & Architecture
 
+* **Grounded Engineering Design System & Executive Landing Stage**:
+  * Clean, architectural brand mark in `Logo.jsx` (solid dark slate plate `#0F172A`, geometric monogram in `#3B82F6` and white `#FFFFFF`, with zero glowing halos or neon blur effects).
+  * Interactive multi-language code studio (Java 21, C++20, Python 3.12) with realistic line numbers, syntax highlighting, and live test suite execution simulator.
+  * 4 structured curriculum roadmaps, 4-tier hiring committee evaluation matrix, interactive algorithmic pattern sandbox, and placement readiness self-assessment checklist.
+  * Zero artificial AI-generated shining effects, glowing blur orbs (`blur-[140px]`), or robotic sci-fi gradients across Landing, Login, Register, and App Shell.
 * **Empathetic, Humanized Experience**:
   * Dynamic "Placement Calibration" levels (`Explorer Mode 🌱`, `Steady Contender ⚡`, `Placement Ready 🚀`).
   * Daily Interview Pro-Tips (DSA two-pointers, CAP theorem, DBMS indexing, STAR format).
@@ -46,7 +51,7 @@
 
 | Layer | Technology | Version | Purpose |
 | :--- | :--- | :--- | :--- |
-| **Frontend** | React 19, Vite, Tailwind CSS v4, Framer Motion | 19.2 / 8.3 | Ultra-fast SPA with cyber-dark aesthetics |
+| **Frontend** | React 19, Vite, Tailwind CSS v4, Framer Motion | 19.2 / 8.3 | High-contrast SPA with clean, grounded developer design tokens |
 | **Backend** | Node.js, Express.js | 20.x / 5.x | Stateless RESTful API with middleware pipelines |
 | **Database** | MongoDB Atlas, Mongoose ODM | 9.4 | NoSQL document storage with native TTL indexing |
 | **Authentication**| JWT (JSON Web Tokens), Bcryptjs | 9.0 / 3.0 | Secure Bearer authorization & salted password hashing |

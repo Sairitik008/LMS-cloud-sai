@@ -62,6 +62,15 @@
   4. Design mock exams as low-stakes, zero-penalty practice grounds with visual reassurance, gentle timer state transitions, and a question breakdown comparing user answers with official solutions.
 - **Rationale:** Substantially improves student retention, lowers test-taking anxiety, and fosters consistent daily preparation habits.
 
+### ADR-008: Elimination of AI/Robotic Visual Clichés in Favor of Grounded Engineering Aesthetics
+- **Context:** Early frontend iterations and AI-assisted design scaffolding defaulted to artificial visual clichés: oversized blurred glowing orbs (`blur-[140px]`), radioactive neon cyan/purple dropshadows, rainbow gradient-clipped text (`bg-clip-text`), and robotic pseudo-telemetry (`SYSTEM STATUS: OPERATIONAL · 235MS ATLAS M0`).
+- **Decision:**
+  1. Completely eliminate all shining blur orbs, glowing backdrops, and artificial neon gradients across `Landing.jsx`, `Logo.jsx`, `Login.jsx`, `Register.jsx`, and `Layout.jsx`.
+  2. Standardize the color palette on grounded slate surfaces (`#0B0F19`, `#0F172A`, `#161F33`), crisp borders (`border-slate-800`), classic engineering blue accents (`#2563EB` / `#3B82F6`), and solid white high-contrast headings (`#F8FAFC`).
+  3. Redesign the brand mark in `Logo.jsx` into an architectural, solid-color vector emblem (squircle plate with geometric monogram in `#3B82F6` and white) that scales cleanly without blur or glow dependencies.
+  4. Re-architect the Landing Page into an authentic, senior engineering experience: interactive multi-language code studio (Java, C++, Python), structured curriculum tracks, hiring committee evaluation rubric, canonical algorithmic pattern sandbox, and placement readiness checklist.
+- **Rationale:** Aligns the platform with industry-standard engineering tools (GitHub, Stripe, Linear, Tailwind Labs), eliminates visual noise and eye strain, and projects authentic engineering credibility.
+
 ---
 
 ## 2. Known Quirks, Gotchas & Edge Cases
@@ -93,6 +102,11 @@
 - **Location:** Client components
 - **Issue:** Modern Vite / Rolldown builds fail if non-existent icons are imported from `react-icons/fa` (e.g. `FaSparkles` does not exist in standard FA4/5 bundles).
 - **Remedy:** Standardize strictly on stable FontAwesome icons exported by `react-icons/fa` (`FaBook`, `FaClock`, `FaLightbulb`, `FaTrophy`, etc.).
+
+### ⚠️ Quirk 7: Repository Visibility & Third-Party Webhook Delivery (Vercel / Render)
+- **Location:** GitHub Repository Settings & CI integrations
+- **Issue:** Changing a GitHub repository visibility from Public to Private suspends automated push webhooks to free-tier third-party integrations (Vercel and Render), preventing automatic build triggers on `git push`.
+- **Remedy:** Maintain public visibility on the repository or configure explicit deployment deploy hooks with personal access tokens if private visibility is required.
 
 ---
 

@@ -4,13 +4,15 @@ This document outlines the visual identity, design tokens, component architectur
 
 ---
 
-## 1. Design Philosophy: The Cyber-Dark Aesthetic
+## 1. Design Philosophy: Grounded Engineering Craft
 
-LMS Cloud Sai is intentionally styled with a **Cyber-Dark** aesthetic tailored to software engineers and tech students:
-- **Dark Mode by Default**: Minimizes eye strain during long study sessions and aligns with modern developer tool interfaces (VS Code, GitHub, Terminal environments).
-- **Glassmorphism**: Layered semi-transparent cards with high backdrop blur (`backdrop-blur-xl`) create visual depth, hierarchy, and a futuristic feel without visual clutter.
-- **Electric Accent Contrast**: Deep slate backgrounds are balanced with high-contrast electric sky blue (`#38bdf8`) and neon purple gradients to direct user attention to critical actions.
-- **Fluid Micro-Interactions**: Every button, card, modal, and page transition features spring physics and hover elevation powered by Framer Motion.
+LMS Cloud Sai is designed with a **clean, disciplined, and authentic engineering aesthetic** tailored for computer science students and software engineers, aligned with top developer platforms (GitHub, Stripe, Linear, Tailwind Labs):
+
+- **Disciplined Dark Palette**: Grounded in deep neutral slate tones (`#0B0F19` canvas, `#0F172A` cards) rather than noisy saturated backgrounds. Minimizes visual fatigue during long coding and reading sessions.
+- **Zero AI-Robotic Clichés**: Strictly avoids artificial glowing blur orbs (`blur-[140px]`), radioactive drop shadows, gradient-clipped titles, and speculative pseudo-telemetry.
+- **High-Contrast Typography**: Crisp, solid white headlines (`#F8FAFC`) paired with structured neutral slate body text (`#94A3B8`) ensure maximum readability without artificial glitter.
+- **Tactile, Solid Controls**: Buttons, pills, and toggles use purposeful solid colors (classic engineering blue `#2563EB` / `#3B82F6` for primary actions, subtle slate `#1E293B` for secondary) with clean border definition (`border-slate-800`).
+- **Authentic Developer Tools UI**: The platform feels like real engineering software, featuring macOS-style code window headers, syntax-highlighted code blocks, line-number gutters, and deterministic test suite execution panels.
 
 ---
 
@@ -21,158 +23,96 @@ The core design tokens are defined in [client/src/index.css](file:///e:/DEVELOPM
 
 | Token Name | Value | Description |
 | :--- | :--- | :--- |
-| `--color-background` | `#0f172a` (Slate 900) | Root application background |
-| `--color-card` | `rgba(30, 41, 59, 0.7)` | Translucent card surface with backdrop blur |
-| `--color-accent` | `#38bdf8` (Sky 400) | Primary electric brand accent & active states |
-| `--color-text-primary` | `#f8fafc` (Slate 50) | High-contrast body and heading typography |
-| `--color-text-muted` | `#94a3b8` (Slate 400) | Subtitles, labels, timestamps, and placeholders |
-| `--color-border` | `rgba(148, 163, 184, 0.1)` | Subtle structural divider lines and card borders |
+| `--color-background` | `#0B0F19` (Slate 950) | Root application background |
+| `--color-surface` | `#0F172A` (Slate 900) | Solid card and modal container surface |
+| `--color-card-elevated` | `#161F33` (Slate 850) | Highlighted sub-panels and active containers |
+| `--color-accent` | `#3B82F6` (Blue 500) | Primary engineering blue brand accent & active states |
+| `--color-text-primary` | `#F8FAFC` (Slate 50) | High-contrast body and heading typography |
+| `--color-text-muted` | `#94A3B8` (Slate 400) | Subtitles, labels, timestamps, and placeholders |
+| `--color-text-dim` | `#64748B` (Slate 500) | Line numbers, secondary metadata, and footer text |
+| `--color-border` | `rgba(255, 255, 255, 0.08)` / `border-slate-800` | Subtle structural divider lines and card borders |
 
 ### 2.2 Semantic Status Colors
 
 | Purpose | Tailwind Class / Hex | Example Usage |
 | :--- | :--- | :--- |
-| **Success / Passing** | `text-green-500` / `bg-green-500/10` | Test scores $\ge 70\%$, Active status, Rank 1 medal |
-| **Warning / Moderate** | `text-yellow-500` / `bg-yellow-500/10` | Test scores $40\% - 69\%$, Gold trophy medals |
-| **Danger / Failing** | `text-red-400` / `bg-red-400/10` | Test scores $< 40\%$, Delete actions, Logout button |
-| **Tutorial Purple** | `text-purple-400` / `bg-purple-600/10` | Video tutorial icons, gradient highlights |
-| **Course Blue** | `text-blue-400` / `bg-blue-500/10` | Course track icons, syllabus tags |
+| **Success / Passing** | `text-emerald-400` / `bg-emerald-500/10` | Test scores $\ge 70\%$, unit test passes, completed milestones |
+| **Warning / Notice** | `text-amber-400` / `bg-amber-500/10` | Test scores $40\% - 69\%$, algorithmic implementation pitfalls |
+| **Danger / Failing** | `text-rose-400` / `bg-rose-500/10` | Test scores $< 40\%$, delete confirmations, logout actions |
+| **Engineering Blue** | `text-blue-400` / `bg-blue-600` | Primary action buttons, active navigation tabs, language switchers |
 
 ---
 
-## 3. Typography & Hierarchy
+## 3. Brand Identity & Emblem (`Logo.jsx`)
 
-The application employs clean system sans-serif typography (`font-sans`) optimized for legibility across technical content and code snippets.
+The brand mark in [client/src/components/common/Logo.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/Logo.jsx) is an architectural, precision-crafted vector emblem designed for scalability from 16px to 64px:
 
-- **Hero Title (`h1`)**: `text-5xl md:text-7xl font-bold tracking-tighter leading-tight`
-- **Page Header (`h1`)**: `text-3xl font-bold text-textPrimary`
-- **Section Heading (`h2`)**: `text-2xl font-bold text-textPrimary`
-- **Card Title (`h3`)**: `text-lg font-bold text-textPrimary`
-- **Body Text**: `text-sm text-textMuted leading-relaxed`
-- **Badges / Overlines**: `text-xs font-black uppercase tracking-widest`
-- **Metric Displays**: `text-2xl to text-4xl font-black`
+* **Emblem Mark**:
+  * Solid dark slate squircle base (`#0F172A`, stroke `#334155`).
+  * Continuous geometric architectural monogram in engineering blue (`#3B82F6`, `strokeWidth: 2.5`) intertwining an "S" with bracket vectors.
+  * Solid white anchor nodes (`#FFFFFF`) representing computational endpoints.
+  * **Zero blur filters, zero neon glows, zero artificial radial gradients.**
+* **Typography**:
+  * High-contrast title: `Sai` in solid white (`font-bold text-white`) and `Cloud` in crisp royal blue (`font-extrabold text-blue-500`).
+  * Monospace status badge: `LMS` in `bg-slate-800 text-slate-300 border border-slate-700 text-[10px] font-mono`.
 
 ---
 
 ## 4. Reusable Core UI Components
 
-### 4.1 Component Classes (Defined in [index.css](file:///e:/DEVELOPMENT/projects/lms/client/src/index.css))
+### 4.1 Buttons & Action Controls
+- **Primary Action**: Solid blue button (`bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm px-6 py-2.5 rounded-lg transition-colors`).
+- **Secondary Action**: Solid slate button (`bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700 font-medium text-sm px-6 py-2.5 rounded-lg transition-colors`).
+- **Command / CLI Pill**: Monospace snippet pill (`bg-slate-900 text-slate-300 border border-slate-800 font-mono text-xs px-4 py-2.5 rounded-lg`) with one-click copy feedback.
 
-```css
-/* Glassmorphism Surface */
-.glass-card {
-  @apply bg-card backdrop-blur-xl border border-border rounded-2xl shadow-2xl;
-}
+### 4.2 Code Studio & Editor Frame
+- **Window Titlebar**: Dark charcoal header (`#161B22`) with macOS window dots (`#EF4444`, `#F59E0B`, `#10B981`) and file breadcrumb path (`src/algorithms/sliding_window/Solution.java`).
+- **Language Switcher**: Solid tabs for `Java 21`, `C++20`, and `Python 3.12`.
+- **Editor Canvas**: Dark background (`#0D1117`), line numbers in `#484F58`, authentic syntax colors, and clean horizontal scrolling.
+- **Execution Output Drawer**: Clear test suite execution feedback (`14 of 14 test cases passed`), execution timing (`0.4ms`), and memory consumption metrics.
 
-/* Primary Electric Action Button */
-.btn-primary {
-  @apply px-6 py-2.5 bg-accent text-background font-bold rounded-xl shadow-lg shadow-accent/20 hover:bg-accent/90 transition-all duration-300;
-}
-
-/* Standardized Form Input */
-.input-field {
-  @apply w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-accent outline-none transition-all duration-300;
-}
-```
-
-### 4.2 Shared React Components
-
-1. **[AnimatedPage.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/AnimatedPage.jsx)**:
-   - Wraps all routed views with Framer Motion.
-   - Smooth entrance: `initial={{ opacity: 0, y: 15 }}`, `animate={{ opacity: 1, y: 0 }}`, `exit={{ opacity: 0, y: -15 }}`.
-2. **[Modal.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/Modal.jsx)**:
-   - Accessible modal dialog mounted via `AnimatePresence`.
-   - Features backdrop blur click-to-close, keyboard ESC dismiss, and animated spring entry (`scale: 0.95 -> 1`).
-3. **[Sidebar.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/Sidebar.jsx)**:
-   - Two-state collapsible sidebar (`width: 260px` open, `80px` collapsed).
-   - Dynamic menu items based on user role (`admin` vs `student`).
-   - Active route detection with illuminated pill borders.
-4. **[Navbar.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/Navbar.jsx)**:
-   - Synchronized margin offset with sidebar width (`left-64` vs `left-20`).
-   - Search field, notification badge, user name, role tag, and avatar thumbnail.
-5. **[SkeletonLoader.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/SkeletonLoader.jsx)**:
-   - Prevents Cumulative Layout Shift (CLS) during API fetches.
-   - Supports `card`, `table-row`, and `text` skeleton variants with pulsing animations.
-6. **[EmptyState.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/EmptyState.jsx)**:
-   - High-fidelity visual fallback for zero-data states (e.g., no tests taken, empty student list).
-7. **[Logo.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/Logo.jsx)**:
-   - Consistent brand badge featuring a stylized gradient icon with customizable text sizing.
+### 4.3 Shared React Components
+1. **[AnimatedPage.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/AnimatedPage.jsx)**: Lightweight opacity entrance transitions.
+2. **[Modal.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/Modal.jsx)**: Accessible modal dialog with keyboard ESC dismiss and backdrop blur.
+3. **[Sidebar.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/Sidebar.jsx)**: Collapsible sidebar (260px open vs 80px collapsed) with role-based routing.
+4. **[Navbar.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/Navbar.jsx)**: Sticky top navigation with search bar, notifications, and user avatar.
+5. **[EmptyState.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/components/common/EmptyState.jsx)**: Conversational empty states with actionable study pro-tips.
 
 ---
 
 ## 5. Page-by-Page UI/UX Breakdown
 
 ### 5.1 Landing Page ([Landing.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/Landing.jsx))
-- **Navigation Bar**: Transparent frosted glass bar anchored to top viewport with quick anchor jumps and Auth CTAs.
-- **Hero Section**: Two-column layout with glowing ambient background orbs (`blur-[120px]`), headline with gradient text clip (`bg-gradient-to-r from-accent to-purple-500`), and interactive floating achievement pills.
-- **Feature Showcase**: 4-column feature grid (Interactive Courses, Video Tutorials, Timed Mock Tests, Gamified Leaderboard).
-- **Social Proof**: Student testimonial cards and platform success metric counters.
+- **Navigation Bar**: Sticky clean dark header with navigation links (`Curriculum`, `Evaluation Criteria`, `Pattern Sandbox`, `Engineering Principles`) and quick Auth CTAs.
+- **Hero Stage**:
+  - Audience badge: `Computer Science & Campus Placement Preparation`.
+  - High-impact headline: `"Master Data Structures, Web Systems, and Technical Interviews"`.
+  - Subheadline explaining first-principles learning in Java, C++, and MERN.
+  - Interactive multi-language Code Studio centerpiece.
+- **Hiring Standards Ticker**: Verified engineering benchmark companies (`Google`, `Amazon`, `Microsoft`, `Adobe`, `Flipkart`, `Uber`, `Atlassian`, `TCS Digital`).
+- **Curriculum Architecture**: 4 comprehensive tracks (DSA, Full-Stack Architecture, Timed Mock Assessments, Core CS Fundamentals).
+- **Evaluation Criteria Matrix**: 4-pillar hiring committee dimensions (Asymptotic Bounds, Edge-Case Handling, System Tradeoffs, Core CS Primitives).
+- **Algorithmic Pattern Sandbox**: Interactive tabbed templates (Sliding Window, Binary Search on Monotonic Ranges, Monotonic Stack) with implementation pitfalls and Big-O proofs.
+- **Placement Readiness Audit**: Interactive 5-point milestone checklist with calculated readiness score.
 
-### 5.2 4-Step Registration Wizard ([Register.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/Register.jsx))
-- **Animated Top Progress Bar**: Visually indicates completion percentage (`25%`, `50%`, `75%`, `100%`).
-- **Step 1 (Core Identity)**: Name, Email, Password, Confirm Password with client validation.
-- **Step 2 (Academic Info)**: Educational institution background and personal bio.
-- **Step 3 (Skill Matrix)**: Technical skills (comma-separated, parsed to tags) and hobbies.
-- **Step 4 (Developer Footprint)**: GitHub profile link, HackerRank handle, LinkedIn URL.
-- **Smooth Navigation**: Framer Motion horizontal slide transition (`x: 50 -> 0 -> -50`) between steps.
+### 5.2 Authentication Views ([Login.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/Login.jsx) & [Register.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/Register.jsx))
+- Clean slate card containers (`#0F172A`, `border-slate-800`) with zero background blur blobs.
+- Clear error toasts on network disconnects or validation issues.
+- 4-step progressive onboarding in `Register.jsx` collecting academic background, technical skills, and developer profile handles.
 
-### 5.3 Student Dashboard ([Dashboard.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/Dashboard.jsx))
-- **Hero Greeting**: Personalized greeting displaying student's full name.
-- **Metric Row**: 4 stat cards with colored icon badges (Courses, Tutorials, Materials, Average Test Score).
-- **Split Content Area**:
-  - Left: Recent Test Performance list with color-coded score percentages.
-  - Right: Available/Upcoming Mock Tests with direct "Start Test" CTA buttons.
-
-### 5.4 Course Exploration & Module Reader ([Courses.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/student/Courses.jsx))
-- **Catalog Mode**: Filter courses by category and text search; cards with thumbnail previews and module count.
-- **Reader Mode**: Expandable accordion tree on the left sidebar to navigate course modules; full reading pane on the right displaying formatted module content.
-
-### 5.5 Video Tutorial Player ([Tutorials.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/student/Tutorials.jsx))
-- **Category Filter Chips**: Horizontal scrollable pill buttons ('All', 'Frontend', 'Backend', 'DevOps', etc.).
-- **Video Card Grid**: Video preview thumbnails, category tags, and duration/topic indicators.
-- **Interactive Player View**: Native HTML5 video player streaming Cloudinary video assets, accompanied by descriptive markdown notes and author metadata.
-
-### 5.6 Study Materials Hub ([StudyMaterials.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/student/StudyMaterials.jsx))
-- **Type Filter Tabs**: Quickly isolate `pdf`, `link`, or `notes`.
-- **Resource Cards**: Distinct visual icon by document type (Red for PDF, Blue for Link, Yellow for Notes).
-- **Direct Action**: One-click download or open-in-new-tab links.
-
-### 5.7 Mock Test & Assessment Interface ([MockTest.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/student/MockTest.jsx))
-- **Pre-Test Screen**: Test cards detailing time limit and question count.
-- **Active Test Environment**:
-  - Requests full-screen browser mode for distraction-free assessment.
-  - Sticky header with real-time countdown timer badge.
-  - Question-by-question presentation with radio option selectors.
-  - Navigation controls (`Previous`, `Next`, `Submit Test`).
-  - Automatic timer-expiry submission guard.
-
-### 5.8 Test Result Summary ([TestResult.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/student/TestResult.jsx))
-- **Celebratory Header**: Animated scaling trophy badge.
-- **Score Overview Grid**: Three metric cards for Final Score %, Correct vs Total, and Time Elapsed.
-- **Action Links**: "Try Another Test" or "Return to Dashboard".
-
-### 5.9 Global Leaderboard ([Leaderboard.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/student/Leaderboard.jsx))
-- **Top 3 Podium Styling**: Gold medal for Rank 1, Silver for Rank 2, Bronze for Rank 3.
-- **Data Table**: Displays student avatar, name, number of assessments taken, and average score percentage.
-
-### 5.10 Profile & Settings ([Settings.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/Settings.jsx))
-- **Avatar Management**: File picker with live client preview, uploading directly to Cloudinary via multipart form-data.
-- **Skill & Social Sync**: Edit skills, educational background, bio, and developer handles.
-- **Password Reset**: Optional secure password update field.
-
-### 5.11 Admin Control Panel ([AdminDashboard.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/admin/AdminDashboard.jsx))
-- **Platform Analytics**: Total students, active courses, mock test completions, and active announcements.
-- **Quick Links**: Direct shortcuts to course, tutorial, material, and test authoring suites.
-- **Strategic Focus**: Operational health alerts and platform engagement reminders.
+### 5.3 Student Learning Arena
+- **Dashboard ([Dashboard.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/Dashboard.jsx))**: Placement calibration readiness tiers (`Explorer Mode 🌱`, `Steady Contender ⚡`, `Placement Ready 🚀`) and daily interview pro-tips.
+- **Courses ([Courses.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/student/Courses.jsx))**: Chapter checklists, difficulty tags, and estimated completion times.
+- **Tutorials ([Tutorials.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/student/Tutorials.jsx))**: Video streaming player with active learning notes companion.
+- **Mock Tests ([MockTest.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/student/MockTest.jsx))**: Fullscreen assessment arena, color-coded countdown timer, and automated submit guard.
+- **Leaderboard ([Leaderboard.jsx](file:///e:/DEVELOPMENT/projects/lms/client/src/pages/student/Leaderboard.jsx))**: Podium rankings (Gold, Silver, Bronze) updated via real-time MongoDB aggregation.
 
 ---
 
 ## 6. Responsive Design & Breakpoints
 
-The application is built mobile-first and responsive across all viewports:
-
 | Breakpoint | Width | Adaptations |
 | :--- | :--- | :--- |
-| **Mobile (`< 768px`)** | `< 768px` | Sidebar collapses to off-canvas drawer; Single-column grids; Navbar search compresses |
-| **Tablet (`768px - 1024px`)** | `768px - 1024px` | Two-column cards; Condensed table padding; Modular accordion stacks |
-| **Desktop (`> 1024px`)** | `> 1024px` | Full multi-column dashboard; Persistent sidebar; Split-screen course reader |
+| **Mobile (`< 768px`)** | `< 768px` | Code studio stacks vertically; single-column bento grids; off-canvas sidebar drawer |
+| **Tablet (`768px - 1024px`)** | `768px - 1024px` | Two-column cards; condensed table padding; modular accordion trees |
+| **Desktop (`> 1024px`)** | `> 1024px` | Full multi-column studio; persistent sidebar; split-screen course reader |

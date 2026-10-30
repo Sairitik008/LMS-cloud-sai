@@ -11,7 +11,7 @@
 
 **LMS Cloud Sai** is a modern, full-stack Learning Management System engineered specifically for IT and computer science students, educators, and software engineering aspirants. The platform bridges the gap between structured course learning, multimedia tutorials, downloadable study resources, and competitive assessment through an integrated mock testing and gamified leaderboard engine.
 
-Built on the MERN stack (MongoDB, Express, React 19, Node.js) with Tailwind CSS v4, Framer Motion, and Cloudinary media processing, the platform delivers a fast, responsive, cyber-themed user experience tailored for modern technical education.
+Built on the MERN stack (MongoDB, Express, React 19, Node.js) with Tailwind CSS v4, Framer Motion, and Cloudinary media processing, the platform delivers a fast, responsive, and grounded developer experience with clean slate surfaces and zero artificial glowing effects.
 
 ---
 
@@ -31,7 +31,7 @@ Built on the MERN stack (MongoDB, Express, React 19, Node.js) with Tailwind CSS 
 | :--- | :--- | :--- | :--- |
 | **Frontend Framework** | React | `^19.2.4` | Component-based UI with modern React hooks & Concurrent features |
 | **Frontend Tooling** | Vite | `^8.0.4` | Ultra-fast HMR and ESM production bundler |
-| **Styling & Design** | Tailwind CSS / PostCSS | `^4.2.2` | Utility-first styling with custom cyber-dark design tokens |
+| **Styling & Design** | Tailwind CSS / PostCSS | `^4.2.2` | Utility-first styling with grounded, clean engineering design tokens |
 | **Animations** | Framer Motion | `^12.38.0` | Fluid page transitions, modal spring physics, and micro-interactions |
 | **Icons & Visuals** | React Icons & Lucide | `^5.6.0` / `^1.7.0` | High-fidelity icon sets across student and admin panels |
 | **Client Routing** | React Router DOM | `^7.14.0` | Declarative client-side routing, protected routes, and layouts |

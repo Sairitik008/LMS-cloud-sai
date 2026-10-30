@@ -17,10 +17,12 @@ The frontend client for **LMS Cloud Sai** is a Single-Page Application (SPA) bui
   * **All-India Leaderboard**: Podium rankings (Gold, Silver, Bronze) recalculating after each mock test.
 * **Developer Identity & Settings**:
   * Rich profile customizer with live avatar preview, target skill chips, and verified coding links (GitHub, LeetCode, LinkedIn).
-* **Warm Design System**:
-  * Cyber-dark palette configured via CSS custom properties in `src/index.css`.
+* **Grounded Engineering Design System**:
+  * Clean slate palette (`#0B0F19`, `#0F172A`) with classic engineering blue accents (`#3B82F6`) and solid white typography.
+  * Architectural, minimalist brand mark (`Logo.jsx`) free of AI-generated shining halos or glowing blur orbs.
+  * Interactive engineering studio on the landing page with multi-language code preview (Java, C++, Python) and test execution telemetry.
   * Conversational empty states with interactive pro-tips (`EmptyState.jsx`).
-  * Fast search overlay with 5-day prep streak indicators (`Navbar.jsx`).
+  * Fast search overlay with prep streak indicators (`Navbar.jsx`).
 
 ---
 
